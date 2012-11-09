@@ -1,16 +1,19 @@
+import sys
+import csv as csv_lib
 import logging
 import time
 import datetime
 import tweepy
 import simplejson as json
 import message_recognizers
+import utils
 
 logger = logging.getLogger(__name__)
 
 RETRY_LIMIT = 10
 
 
-def csv(value):
+def csv_args(value):
     """Parse a CSV string list into a list of strings.
 
     Used in command line parsing."""
@@ -29,13 +32,11 @@ def _init_logger(config, opts):
     logger.setLevel(level)
 
 
-def _resolve_status_field(status_obj, field_spec, def_value):
-    return getattr(status, f, 'N/A'),
-
 class StreamListener(tweepy.StreamListener):
     def __init__(self, opts, api=None):
         super(StreamListener, self).__init__(api=api)
         self.opts = opts
+        self.csv_writer = csv_lib.writer(sys.stdout)
 
         # Create a list of recognizer instances, in decreasing priority order.
         self.recognizers = (
@@ -81,10 +82,10 @@ class StreamListener(tweepy.StreamListener):
         if self.tweet_matchp(status):
             if self.opts.field:
                 try:
+                    csvrow = []
                     for f in self.opts.field:
-                        # TODO: Need better way of formatting this.  Output as JSON object?
-                        print _resolve_status_field(status, f, 'n/a'),
-                    print
+                        csvrow.append(utils.multi_getattr(status, f, 'n/a').encode('utf8'))
+                    print self.csv_writer.writerow(csvrow)
                 except UnicodeEncodeError as e:
                     logger.warn(f, exc_info=e)
                     pass
@@ -226,7 +227,7 @@ def _parse_command_line():
     parser.add_argument(
         '-u',
         '--user-lang',
-        type=csv,
+        type=csv_args,
         default='en',
         help='BCP-47 language filter(s).  If set, incoming status user\'s language must match these languages.'
         )
@@ -241,7 +242,7 @@ def _parse_command_line():
     parser.add_argument(
         '-f',
         '--field',
-        type=csv,
+        type=csv_args,
         help='List of fields to output.  If empty, output raw status JSON structure.')
 
     parser.add_argument(
