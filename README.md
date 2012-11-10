@@ -1,7 +1,8 @@
-Twitter Streamer is a command-line utility to dump [Twitter streaming API][streaming-apis] data
-to stdout.  It uses the [statuses/filter][statuses-filter] method.
+# Twitter Streamer #
+*Twitter Streamer* is a Python command-line utility to dump [Twitter streaming API][streaming-apis] 
+[statuses/filter][statuses-filter] method data to stdout.
 
-It started out as a testing tool for [Tweepy][tweepy], and to satisfy my curiosity.
+It began life as a testing tool for [Tweepy][tweepy], and to satisfy my curiosity.
 
 ## Prerequisites ##
 You will need:
@@ -71,22 +72,20 @@ Filter statuses containing (*water* **and** *drink*) *or* (*eat* **and** *lunch*
 
     python streamer.py "water drink" "eat lunch"
     
-
 ## Output Format ##
-The normal output mode is to dump the raw stream data text for each received
-stream element, followed by a newline.
+The default output mode is to dump the raw stream data status text for each received
+element, followed by a newline.
 
-Each raw stream element is a well-formed JSON object, but at present the
+Each raw stream element is expected to be a well-formed JSON object, but at present the
 stream elements are not separated by commas, nor is the stream wrapped in a JSON
 list.  Therefore, if you expect to parse the output of this program as JSON
-data, you will need to preprocess it in order to be well-formed JSON.  You should
-be able to split the output on newlines, inserting commas between records. 
-
+data, you will need to process it into well-formed JSON, or take each element as
+an independent JSON object rather than treat the stream as a JSON array.
 ## Experimental Features ##
- 
-The *-f* or *--fields=* parameter allows a comma-separated list of output fields.
-The field values will be emitted in the order listed in the given *-f* or *--fields=*
-parameter.  The output is not formatted in any other way.
+### Field Output Selectors ###
+The *-f* (or *--fields*) parameter allows a comma-separated list of output fields.
+The field values will be emitted in the order listed in the given *-f* 
+parameter value.  The output will be formatted as CSV records.
 
 Example 1: *list created_at and text fields for 'elections'*
 
@@ -105,7 +104,18 @@ Example Results:
 
     User name 1,Cats and dogs in Mexico. http://t.co/gYJvhdvv
     User name 2,I actually like both cats and dogs but I've been an introvert for about 27 years now.
-    
+
+## Caveats ##
+* General error handling needs work.  
+    The current default mode retries the connection with a delay
+in the event of most failures; this keeps Streamer running despite network
+problems or other errors.  This behavior is likely to change in the near future, 
+and if Streamer supports this mode it will probably be a non-default option -- the
+default behavior should terminate with an error message.
+* Configuration (.ini) file error handling needs work.
+    Errors due to misconfiguration probably need better handling and reporting. 
+* Log messages go to stderr.
+  
 [streaming-apis]: https://dev.twitter.com/docs/streaming-apis
 [parameters-track]: https://dev.twitter.com/docs/streaming-apis/parameters#track 
 [statuses-filter]: https://dev.twitter.com/docs/api/1.1/post/statuses/filter
