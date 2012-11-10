@@ -76,8 +76,6 @@ class StreamListener(tweepy.StreamListener):
 
     def parse_status_and_dispatch(self, stream_data):
         """Parse an incoming status and do something with it.
-
-        TODO: Better output formatting.
         """
         status = tweepy.models.Status.parse(self.api, json.loads(stream_data))
         if self.tweet_matchp(status):
@@ -92,7 +90,7 @@ class StreamListener(tweepy.StreamListener):
                             # Eat the exception, value is already set.
                             pass
                         csvrow.append(value)
-                    print self.csv_writer.writerow(csvrow)
+                    self.csv_writer.writerow(csvrow)
                 except UnicodeEncodeError as e:
                     logger.warn(f, exc_info=e)
                     pass
