@@ -1,7 +1,7 @@
-Twitter Streamer is a command-line utility to dump [Twitter streaming API][1] data
-to stdout.  It uses the [statuses/filter][3] method.
+Twitter Streamer is a command-line utility to dump [Twitter streaming API][streaming-apis] data
+to stdout.  It uses the [statuses/filter][statuses-filter] method.
 
-It started out as a testing tool for [Tweepy][tweepy].
+It started out as a testing tool for [Tweepy][tweepy], and to satisfy my curiosity.
 
 ## Prerequisites ##
 You will need:
@@ -49,13 +49,13 @@ You can get a usage summary by invoking streamer.py with the -h or --help option
                             output raw status text, a large JSON structure.
 
 
-The positional *track* parameter provides one or more [track search terms][2] for the [Twitter 
-*statuses/filter* API][3].  Commas denote an *or* relationship, while spaces
+The positional *track* parameter provides one or more [track search terms][parameters-track] for the [Twitter 
+*statuses/filter* API][statuses-filter].  Commas denote an *or* relationship, while spaces
 denote an *and* relationship.  
 
 You can provide multiple *track* parameters, which will expand the search terms.
 
-Please refer to the [track][2] documentation for specific limitations and 
+Please refer to the [track][parameters-track] documentation for specific limitations and 
 usage examples.
 
 ## Examples ##
@@ -106,8 +106,8 @@ Example Results:
     User name 1,Cats and dogs in Mexico. http://t.co/gYJvhdvv
     User name 2,I actually like both cats and dogs but I've been an introvert for about 27 years now.
     
-[1]: https://dev.twitter.com/docs/streaming-apis
-[2]: https://dev.twitter.com/docs/streaming-apis/parameters#track 
-[3]: https://dev.twitter.com/docs/api/1.1/post/statuses/filter
+[streaming-apis]: https://dev.twitter.com/docs/streaming-apis
+[parameters-track]: https://dev.twitter.com/docs/streaming-apis/parameters#track 
+[statuses-filter]: https://dev.twitter.com/docs/api/1.1/post/statuses/filter
 [keys]: https://dev.twitter.com/docs/faq#7447
 [tweepy]: https://github.com/tweepy/tweepy
