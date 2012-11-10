@@ -60,12 +60,15 @@ usage examples.
 
 ## Examples ##
 Filter statuses containing both *car* **and** *dog*:
+
     python streamer.py "car dog"
 
 Filter statuses containing either *boat* **or** *bike*:
+
     python streamer.py "boat,bike" 
     
 Filter statuses containing (*water* **and** *drink*) *or* (*eat* **and** *lunch*):
+
     python streamer.py "water drink" "eat lunch"
     
 
