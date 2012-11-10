@@ -80,11 +80,17 @@ class StreamListener(tweepy.StreamListener):
         """
         status = tweepy.models.Status.parse(self.api, json.loads(stream_data))
         if self.tweet_matchp(status):
-            if self.opts.field:
+            if self.opts.fields:
                 try:
                     csvrow = []
-                    for f in self.opts.field:
-                        csvrow.append(utils.multi_getattr(status, f, 'n/a').encode('utf8'))
+                    for f in self.opts.fields:
+                        value = utils.multi_getattr(status, f, 'n/a')
+                        try:
+                            value = value.encode('utf8')
+                        except AttributeError:
+                            # Eat the exception, value is already set.
+                            pass
+                        csvrow.append(value)
                     print self.csv_writer.writerow(csvrow)
                 except UnicodeEncodeError as e:
                     logger.warn(f, exc_info=e)
@@ -118,7 +124,7 @@ class StreamListener(tweepy.StreamListener):
 
         Currently this filters on self.opts.lang if it is not nothing...
         """
-        if not self.opts.include_retweets and self.is_retweet(tweet):
+        if self.opts.no_retweets and self.is_retweet(tweet):
             return False
 
         if self.opts.user_lang:
@@ -210,18 +216,18 @@ def _parse_command_line():
         help="set log level to one used by logging module.  Default is WARN."
         )
 
-    parser.add_argument(
-        '-v',
-        '--verbosity',
-        action='count',
-        help='set verbosity level.  Default is no verbosity.'
-        )
+#    parser.add_argument(
+#        '-v',
+#        '--verbosity',
+#        action='count',
+#        help='set verbosity level for various operations.  Default is non-verbose output.'
+#        )
 
     parser.add_argument(
         '-r',
         '--report-lag',
         type=int,
-        help='If set, will report time difference between local system and Twitter stream server time exceeding this number of seconds.'
+        help='Report time difference between local system and Twitter stream server time exceeding this number of seconds.'
         )
 
     parser.add_argument(
@@ -233,17 +239,17 @@ def _parse_command_line():
         )
 
     parser.add_argument(
-        '-i',
-        '--include-retweets',
+        '-n',
+        '--no-retweets',
         action='store_true',
-        help='If set, include statuses identified as retweets.'
+        help='If set, don\'t include statuses identified as retweets.'
         )
 
     parser.add_argument(
         '-f',
-        '--field',
+        '--fields',
         type=csv_args,
-        help='List of fields to output.  If empty, output raw status JSON structure.')
+        help='List of fields to output as CSV columns.  If not set, output raw status text, a large JSON structure.')
 
     parser.add_argument(
         'track',
