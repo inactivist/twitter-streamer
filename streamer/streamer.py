@@ -21,7 +21,8 @@ def csv_args(value):
 
 
 def _get_version():
-    return "0.0.1"
+    from __init__ import __version__
+    return __version__
 
 
 def _init_logger(config, opts):
