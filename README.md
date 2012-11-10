@@ -49,8 +49,8 @@ You can get a usage summary by invoking streamer.py with the -h or --help option
                             output raw status text, a large JSON structure.
 
 
-The positional *track* parameter provides one or more [track search terms][2] for the Twitter 
-*statuses/filter* API.  Commas denote an *or* relationship, while spaces
+The positional *track* parameter provides one or more [track search terms][2] for the [Twitter 
+*statuses/filter* API][3].  Commas denote an *or* relationship, while spaces
 denote an *and* relationship.  
 
 You can provide multiple *track* parameters, which will expand the search terms.
@@ -85,17 +85,21 @@ The *-f* or *--fields=* parameter allows a comma-separated list of output fields
 The field values will be emitted in the order listed in the given *-f* or *--fields=*
 parameter.  The output is not formatted in any other way.
 
-Example 1: list created_at and text fields for 'elections'
+Example 1: *list created_at and text fields for 'elections'*
+
     python streamer.py -f "created_at,text" elections
 
 Example results:
+
     2012-11-09 20:26:47 Volatility the Likely Outcome of Elections http://t.co/trmmSpXp #Barron's
     2012-11-09 20:26:50 @WHLive then why the president ordered Boeing to release the layoff news AFTER the elections?
 
-Example 2: list user.name and text fields for tweets containing dogs *and* cats
+Example 2: *list user.name and text fields for tweets containing dogs *and* cats*
+
     python streamer.py -f "user.name,text" "dogs cats"
     
 Example Results:
+
     User name 1,Cats and dogs in Mexico. http://t.co/gYJvhdvv
     User name 2,I actually like both cats and dogs but I've been an introvert for about 27 years now.
     
