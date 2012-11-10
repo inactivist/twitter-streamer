@@ -235,7 +235,10 @@ def _parse_command_line():
         '--user-lang',
         type=csv_args,
         default='en',
-        help='BCP-47 language filter(s).  If set, incoming status user\'s language must match these languages.'
+        help="""BCP-47 language filter(s).  A comma-separate list of language codes.
+        Default is "en", which will include
+        only tweets made by users having English (en) as their profile language.
+        If set, incoming status user\'s language must match one these languages."""
         )
 
     parser.add_argument(
