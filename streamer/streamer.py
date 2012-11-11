@@ -312,9 +312,8 @@ if __name__ == "__main__":
     import argparse
     import config
     opts = _parse_command_line()
-    if len(opts.locations) % 4 != 0:
+    if opts.locations is not None and len(opts.locations) % 4 != 0:
         raise ValueError('--locations must contain a multiple of four numbers')
-
 
     conf = config.DictConfigParser()
     conf.read(opts.config_file)
