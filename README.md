@@ -4,7 +4,7 @@
 
 It began life as a testing tool for [Tweepy][tweepy], and to satisfy my curiosity.
 It's currently in an early beta test state, needs testing and improvement. 
-(see [Known Issues](#issues), below)
+(see [Known issues](#known-issues), below)
 
 ## Prerequisites ##
 You will need:
@@ -93,7 +93,7 @@ Example Results:
 
 ## To be done ##
 See TODO.md
-## Known issues<a name='issues'>&nbsp;</a> ##
+## Known issues ##
 * Needs a bit of cleanup -- obsolete code remains from prior project and should
 be refactored or removed.
 * General error handling needs work.  
