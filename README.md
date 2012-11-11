@@ -92,7 +92,7 @@ Example Results:
     User name 2,I actually like both cats and dogs but I've been an introvert for about 27 years now.
 
 ## To be done ##
-See [TODO.md](TODO.md).
+See TODO.md
 ## Known issues<a name='issues'>&nbsp;</a> ##
 * Needs a bit of cleanup -- obsolete code remains from prior project and should
 be refactored or removed.
