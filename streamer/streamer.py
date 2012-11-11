@@ -196,7 +196,9 @@ def process_tweets(config, opts):
 
     while listener.running:
         try:
-            kwargs = { 'track': opts.track }
+            kwargs = {}
+            if opts.track:
+                kwargs['track'] = opts.track
             if opts.stall_warnings:
                 kwargs['stall_warnings'] = True
             if opts.locations:
@@ -299,11 +301,9 @@ def _parse_command_line():
 
     parser.add_argument(
         'track',
-        nargs='+',
-        default='testing',
-        help='status keywords to be tracked.'
+        nargs='*',
+        help='status keywords to be tracked (optional if --locations provided.)'
         )
-
 
     return parser.parse_args()
 
@@ -312,9 +312,12 @@ if __name__ == "__main__":
     import argparse
     import config
     opts = _parse_command_line()
-    if opts.locations is not None and len(opts.locations) % 4 != 0:
-        raise ValueError('--locations must contain a multiple of four numbers')
-
+    if opts.locations is not None:
+        if len(opts.locations) % 4 != 0:
+            raise ValueError('--locations must contain a multiple of four numbers')
+    else:
+        if not opts.track:
+            raise ValueError('Must provide list of track keywords if --location is not provided.')
     conf = config.DictConfigParser()
     conf.read(opts.config_file)
     _init_logger(conf, opts)
