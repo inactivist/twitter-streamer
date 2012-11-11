@@ -3,6 +3,8 @@
 [statuses/filter][statuses-filter] method data to stdout.
 
 It began life as a testing tool for [Tweepy][tweepy], and to satisfy my curiosity.
+It's currently in an early beta test state, needs testing and improvement. 
+(see [Known Issues](#issues), below)
 
 ## Prerequisites ##
 You will need:
@@ -22,7 +24,7 @@ Once you have your API keys, edit default.ini, providing the required elements.
 ## Usage ##
 Basic usage:
 
-    python streamer.py [options] "track terms"
+    python streamer.py [options] "track terms" ...
     
 You can print a usage summary by invoking `streamer.py` with the `-h` or `--help` option.
 
@@ -89,16 +91,23 @@ Example Results:
     User name 1,Cats and dogs in Mexico. http://t.co/gYJvhdvv
     User name 2,I actually like both cats and dogs but I've been an introvert for about 27 years now.
 
-## Caveats ##
+## To be done ##
+See [TODO.md](TODO.md).
+## Known issues<a name='issues'>&nbsp;</a> ##
+* Needs a bit of cleanup -- obsolete code remains from prior project and should
+be refactored or removed.
 * General error handling needs work.  
     The current default mode retries the connection with a delay
 in the event of most failures; this keeps Streamer running despite network
-problems or other errors.  This behavior is likely to change in the near future, 
-and if Streamer supports this mode it will probably be a non-default option -- the
-default behavior should terminate with an error message.
+problems or other errors.  
+    If you specify the `--terminate-on-errors` (`-t`) option, Streamer will
+    terminate with an error message on errors.  This is a work in progress. 
 * Configuration (.ini) file error handling needs work.
     Errors due to misconfiguration probably need better handling and reporting. 
 * Log messages go to stderr.
+
+##License##
+(MIT License) - Copyright (c) 2012 Exodus Development, Inc.
   
 [streaming-apis]: https://dev.twitter.com/docs/streaming-apis
 [parameters-track]: https://dev.twitter.com/docs/streaming-apis/parameters#track 
