@@ -11,7 +11,7 @@ import utils
 logger = logging.getLogger(__name__)
 
 RETRY_LIMIT = 10
-
+MISSING_FIELD_VALUE = ''
 
 def csv_args(value):
     """Parse a CSV string list into a list of strings.
@@ -38,6 +38,7 @@ class StreamListener(tweepy.StreamListener):
         super(StreamListener, self).__init__(api=api)
         self.opts = opts
         self.csv_writer = csv_lib.writer(sys.stdout)
+        self.running = True
 
         # Create a list of recognizer instances, in decreasing priority order.
         self.recognizers = (
@@ -83,11 +84,24 @@ class StreamListener(tweepy.StreamListener):
                 try:
                     csvrow = []
                     for f in self.opts.fields:
-                        value = utils.multi_getattr(status, f, 'n/a')
+                        try:
+                            value = utils.multi_getattr(status, f, None)
+                        except AttributeError:
+                            if opts.terminate_on_error:
+                                logger.error("Field '%s' not found in tweet id=%s, terminating." % (f, status.id_str))
+                                # Terminate main loop.
+                                self.running = False
+                                # Terminate read loop.
+                                return False
+                            else:
+                                value = MISSING_FIELD_VALUE
+                        # Try to encode the value as UTF-8, since Twitter says
+                        # that's how it's encoded. 
+                        # If it's not a string value, we eat the exception, 
+                        # as value is already set.
                         try:
                             value = value.encode('utf8')
                         except AttributeError:
-                            # Eat the exception, value is already set.
                             pass
                         csvrow.append(value)
                     self.csv_writer.writerow(csvrow)
@@ -114,7 +128,7 @@ class StreamListener(tweepy.StreamListener):
         return self.on_limit(json.loads(stream_data)['limit']['track'])
 
     def is_retweet(self, tweet):
-        return (hasattr(tweet, 'retweeted_status') and tweet.retweeted_status) \
+        return hasattr(tweet, 'retweeted_status') \
             or tweet.text.startswith('RT ') \
             or ' RT ' in tweet.text
 
@@ -140,6 +154,8 @@ class StreamListener(tweepy.StreamListener):
         if status_code != 401:
             logger.error(" -- stopping.")
             # Stop on anything other than a 401 error (Unauthorized)
+            # Stop main loop.
+            self.running = False
             return False
 
     def on_timeout(self):
@@ -154,6 +170,8 @@ class StreamListener(tweepy.StreamListener):
         for r in self.recognizers:
             if r.match(data):
                 if r.handle_message(data) is False:
+                    # Terminate main loop.
+                    self.running = False
                     return False  # Stop streaming
                 # Don't execute any other recognizers, and don't call base
                 # on_data() because we've already handled the message.
@@ -174,8 +192,8 @@ def process_tweets(config, opts):
     streamer = tweepy.Stream(auth=auth, listener=listener, retry_count=9999,
         retry_time=1, buffer_size=16000)
 
-    running = True
-    while running:
+
+    while listener.running:
         try:
             logger.info('Start streaming...')
             try:
@@ -191,11 +209,12 @@ def process_tweets(config, opts):
         except IOError:
             logger.exception('Caught IOError')
         except KeyboardInterrupt:
-            running = False
+            # Stop the listener loop.
+            listener.running = False
         except Exception:
             logger.exception("Unexpected exception.")
 
-        if running:
+        if listener.running:
             logger.debug('Sleeping...')
             time.sleep(5)
 
@@ -244,20 +263,26 @@ def _parse_command_line():
         '-n',
         '--no-retweets',
         action='store_true',
-        help='If set, don\'t include statuses identified as retweets.'
+        help='if set, don\'t include statuses identified as retweets.'
         )
 
     parser.add_argument(
         '-f',
         '--fields',
         type=csv_args,
-        help='List of fields to output as CSV columns.  If not set, output raw status text, a large JSON structure.')
+        help='list of fields to output as CSV columns.  If not set, output raw status text, a large JSON structure.')
+
+    parser.add_argument(
+        '-t',
+        '--terminate-on-error',
+        action='store_true',
+        help='terminate processing on errors if set.')
 
     parser.add_argument(
         'track',
         nargs='+',
         default='testing',
-        help='Status keywords to be tracked.'
+        help='status keywords to be tracked.'
         )
     return parser.parse_args()
 
