@@ -20,36 +20,11 @@ Once you have your API keys, edit default.ini, providing the required elements.
     access_token_secret: YOUR_ACCESS_TOKEN_SECRET
 
 ## Usage ##
+Basic usage:
+
+    python streamer.py [options] "track terms"
+    
 You can print a usage summary by invoking `streamer.py` with the `-h` or `--help` option.
-
-    $ python streamer.py --help
-    usage: streamer.py [-h] [-c CONFIG_FILE] [-l LOG_LEVEL] [-r REPORT_LAG]
-                       [-u USER_LANG] [-n] [-f FIELDS]
-                       track [track ...]
-    
-    Twitter Stream dumper v0.0.1
-    
-    positional arguments:
-      track                 Status keywords to be tracked.
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      -c CONFIG_FILE, --config-file CONFIG_FILE
-      -l LOG_LEVEL, --log-level LOG_LEVEL
-                            set log level to one used by logging module. Default
-                            is WARN.
-      -r REPORT_LAG, --report-lag REPORT_LAG
-                            Report time difference between local system and
-                            Twitter stream server time exceeding this number of
-                            seconds.
-      -u USER_LANG, --user-lang USER_LANG
-                            BCP-47 language filter(s). If set, incoming status
-                            user's language must match these languages.
-      -n, --no-retweets     If set, don't include statuses identified as retweets.
-      -f FIELDS, --fields FIELDS
-                            List of fields to output as CSV columns. If not set,
-                            output raw status text, a large JSON structure.
-
 
 The positional *track* parameter provides one or more [track search terms][parameters-track] for the [Twitter 
 *statuses/filter* API][statuses-filter].  Commas denote an *or* relationship, while spaces
