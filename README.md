@@ -6,6 +6,7 @@ It began life as a testing tool for [Tweepy][tweepy], and to satisfy my curiosit
 
 ## Prerequisites ##
 You will need:
+
  1. Python 2.7, [Tweepy][tweepy] and its prerequisites.
  2. Your [Twitter API keys][keys].
 
@@ -19,7 +20,7 @@ Once you have your API keys, edit default.ini, providing the required elements.
     access_token_secret: YOUR_ACCESS_TOKEN_SECRET
 
 ## Usage ##
-You can get a usage summary by invoking streamer.py with the -h or --help option.
+You can print a usage summary by invoking `streamer.py` with the `-h` or `--help` option.
 
     $ python streamer.py --help
     usage: streamer.py [-h] [-c CONFIG_FILE] [-l LOG_LEVEL] [-r REPORT_LAG]
@@ -60,15 +61,15 @@ Please refer to the [track][parameters-track] documentation for specific limitat
 usage examples.
 
 ## Examples ##
-Filter statuses containing both *car* **and** *dog*:
+Stream (filter) statuses containing both *car* **and** *dog*:
 
     python streamer.py "car dog"
 
-Filter statuses containing either *boat* **or** *bike*:
+Stream statuses containing either *boat* **or** *bike*:
 
     python streamer.py "boat,bike" 
     
-Filter statuses containing (*water* **and** *drink*) *or* (*eat* **and** *lunch*):
+Stream statuses containing (*water* **and** *drink*) *or* (*eat* **and** *lunch*):
 
     python streamer.py "water drink" "eat lunch"
     
@@ -83,9 +84,17 @@ data, you will need to process it into well-formed JSON, or take each element as
 an independent JSON object rather than treat the stream as a JSON array.
 ## Experimental Features ##
 ### Field Output Selectors ###
-The *-f* (or *--fields*) parameter allows a comma-separated list of output fields.
-The field values will be emitted in the order listed in the given *-f* 
-parameter value.  The output will be formatted as CSV records.
+The `-f` (or `--fields`) parameter allows a comma-separated list of output fields.
+The field values will be emitted in the order listed in the given `-f` 
+parameter value.  Output will be formatted as CSV records.
+
+You can access nested elements by using dotted notation: `user.name` accesses 
+the `name` element of the `user` object.  See Twitter's [tweets][twitter-tweets] 
+structure reference for a list of valid elements. 
+
+If you reference a non-existent element, the output column will be empty. 
+If you prefer to have an error message displayed and terminate processing
+specify the `-t` or `--terminate-on-error` option. 
 
 Example 1: *list created_at and text fields for 'elections'*
 
@@ -121,3 +130,4 @@ default behavior should terminate with an error message.
 [statuses-filter]: https://dev.twitter.com/docs/api/1.1/post/statuses/filter
 [keys]: https://dev.twitter.com/docs/faq#7447
 [tweepy]: https://github.com/tweepy/tweepy
+[twitter-tweets]: https://dev.twitter.com/docs/platform-objects/tweets
