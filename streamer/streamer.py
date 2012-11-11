@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 RETRY_LIMIT = 10
 MISSING_FIELD_VALUE = ''
 
+
 def csv_args(value):
     """Parse a CSV string list into a list of strings.
 
@@ -195,9 +196,14 @@ def process_tweets(config, opts):
 
     while listener.running:
         try:
-            logger.info('Start streaming...')
+            kwargs = { 'track': opts.track }
+            if opts.stall_warnings:
+                kwargs['stall_warnings'] = True
+            if opts.locations:
+                kwargs['locations'] = map(float, opts.locations)
             try:
-                streamer.filter(track=opts.track, stall_warnings=True)
+                logger.debug('streamer.filter(%s)' % kwargs)
+                streamer.filter(**kwargs)
             except TypeError as e:
                 if 'stall_warnings' in e.message:
                     logger.warn('Installed Tweepy version does not support stall_warnings parameter.  Restarting without stall warnings.')
@@ -207,11 +213,14 @@ def process_tweets(config, opts):
 
             logger.debug('Returned from streaming...')
         except IOError:
+            if opts.terminate_on_error:
+                listener.running = False
             logger.exception('Caught IOError')
         except KeyboardInterrupt:
             # Stop the listener loop.
             listener.running = False
         except Exception:
+            listener.running = False
             logger.exception("Unexpected exception.")
 
         if listener.running:
@@ -279,11 +288,23 @@ def _parse_command_line():
         help='terminate processing on errors if set.')
 
     parser.add_argument(
+        '--stall-warnings',
+        action='store_true',
+        help='if set, request stall warnings from Twitter streaming API if Tweepy support them.')
+
+    parser.add_argument(
+        '--locations',
+        type=csv_args,
+        help='if present, a list of comma-separated bounding boxes.  See Tweepy streaming API location parameter.')
+
+    parser.add_argument(
         'track',
         nargs='+',
         default='testing',
         help='status keywords to be tracked.'
         )
+
+
     return parser.parse_args()
 
 
@@ -291,6 +312,10 @@ if __name__ == "__main__":
     import argparse
     import config
     opts = _parse_command_line()
+    if len(opts.locations) % 4 != 0:
+        raise ValueError('--locations must contain a multiple of four numbers')
+
+
     conf = config.DictConfigParser()
     conf.read(opts.config_file)
     _init_logger(conf, opts)
