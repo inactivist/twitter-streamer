@@ -12,7 +12,7 @@ def multi_getattr(obj, attr, default=None):
         try:
             obj = getattr(obj, i)
         except AttributeError:
-            if default:
+            if default is not None:
                 return default
             else:
                 raise
