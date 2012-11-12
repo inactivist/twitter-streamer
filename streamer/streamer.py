@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 RETRY_LIMIT = 10
 MISSING_FIELD_VALUE = ''
 
-
 def csv_args(value):
     """Parse a CSV string list into a list of strings.
 
@@ -86,7 +85,7 @@ class StreamListener(tweepy.StreamListener):
                     csvrow = []
                     for f in self.opts.fields:
                         try:
-                            value = utils.multi_getattr(status, f, None)
+                            value = utils.resolve_with_default(status, f, None)
                         except AttributeError:
                             if opts.terminate_on_error:
                                 logger.error("Field '%s' not found in tweet id=%s, terminating." % (f, status.id_str))

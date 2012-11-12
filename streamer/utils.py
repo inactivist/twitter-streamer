@@ -1,3 +1,31 @@
+def resolve(obj, attrspec):
+    """
+    Resolve elements from an object.
+    Works with objects and dicts.
+    From: http://stackoverflow.com/a/9101577/1309774
+    """
+    for attr in attrspec.split("."):
+        try:
+            obj = obj[attr]
+        except (TypeError, KeyError):
+            obj = getattr(obj, attr)
+    return obj
+
+
+def resolve_with_default(obj, attrspec, default=None):
+    """
+    Resolve elements from an object, with a default value.
+    """
+    result = default
+    try:
+        result = resolve(obj, attrspec)
+    except:
+        # Pass along the exception if no default is specified; otherwise, eat it.
+        if default is None:
+            raise
+    return result
+
+
 def multi_getattr(obj, attr, default=None):
     """
     Get a named attribute from an object; multi_getattr(x, 'a.b.c.d') is
