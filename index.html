@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Twitter-streamer : Dump Twitter API statuses/filter streams." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Twitter-streamer</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/inactivist/twitter-streamer">View on GitHub</a>
+
+          <h1 id="project_title">Twitter-streamer</h1>
+          <h2 id="project_tagline">Dump Twitter API statuses/filter streams.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/inactivist/twitter-streamer/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/inactivist/twitter-streamer/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Twitter Streamer</h1>
+
+<p><em>Twitter Streamer</em> is a Python command-line utility to dump <a href="https://dev.twitter.com/docs/streaming-apis">Twitter streaming API</a> 
+<a href="https://dev.twitter.com/docs/api/1.1/post/statuses/filter">statuses/filter</a> method data to stdout.</p>
+
+<p>It began life as a testing tool for <a href="https://github.com/tweepy/tweepy">Tweepy</a>, and to satisfy my curiosity.
+It's currently in an early beta test state, needs testing and improvement. 
+(see <a href="#known-issues">Known issues</a>, below)</p>
+
+<h2>Prerequisites</h2>
+
+<p>You will need:</p>
+
+<ol>
+<li>Python 2.7, <a href="https://github.com/tweepy/tweepy">Tweepy</a> and its prerequisites.</li>
+<li>Your <a href="https://dev.twitter.com/docs/faq#7447">Twitter API keys</a>.</li>
+</ol><p>Once you have your API keys, edit default.ini, providing the required elements.</p>
+
+<pre><code>[twitter_api]
+# You must use the keys provided by Twitter for your account.
+consumer_key: YOUR_CONSUMER_KEY
+consumer_secret: YOUR_CONSUMER_SECRET
+access_token_key: YOUR_ACCESS_TOKEN_KEY
+access_token_secret: YOUR_ACCESS_TOKEN_SECRET
+</code></pre>
+
+<h2>Usage</h2>
+
+<p>Basic usage:</p>
+
+<pre><code>python streamer.py [options] "track terms" ...
+</code></pre>
+
+<p>You can print a usage summary by invoking <code>streamer.py</code> with the <code>-h</code> or <code>--help</code> option.</p>
+
+<p>The positional <em>track</em> parameter provides one or more <a href="https://dev.twitter.com/docs/streaming-apis/parameters#track">track search terms</a> for the <a href="https://dev.twitter.com/docs/api/1.1/post/statuses/filter">Twitter 
+<em>statuses/filter</em> API</a>.  Commas denote an <em>or</em> relationship, while spaces
+denote an <em>and</em> relationship.  </p>
+
+<p>You can provide multiple <em>track</em> parameters, which will expand the search terms.</p>
+
+<p>Please refer to the <a href="https://dev.twitter.com/docs/streaming-apis/parameters#track">track</a> documentation for specific limitations and 
+usage examples.</p>
+
+<h2>Examples</h2>
+
+<p>Stream (filter) statuses containing both <em>car</em> <strong>and</strong> <em>dog</em>:</p>
+
+<pre><code>python streamer.py "car dog"
+</code></pre>
+
+<p>Stream statuses containing either <em>boat</em> <strong>or</strong> <em>bike</em>:</p>
+
+<pre><code>python streamer.py "boat,bike" 
+</code></pre>
+
+<p>Stream statuses containing (*water* <strong>and</strong> <em>drink</em>) <em>or</em> (*eat* <strong>and</strong> <em>lunch</em>):</p>
+
+<pre><code>python streamer.py "water drink" "eat lunch"
+</code></pre>
+
+<h2>Output Format</h2>
+
+<p>The default output mode is to dump the raw stream data status text for each received
+element, followed by a newline.</p>
+
+<p>Each raw stream element is expected to be a well-formed JSON object, but at present the
+stream elements are not separated by commas, nor is the stream wrapped in a JSON
+list.  Therefore, if you expect to parse the output of this program as JSON
+data, you will need to process it into well-formed JSON, or take each element as
+an independent JSON object rather than treat the stream as a JSON array.</p>
+
+<h2>Experimental Features</h2>
+
+<h3>Field Output Selectors</h3>
+
+<p>The <code>-f</code> (or <code>--fields</code>) parameter allows a comma-separated list of output fields.
+The field values will be emitted in the order listed in the given <code>-f</code> 
+parameter value.  Output will be formatted as CSV records.</p>
+
+<p>You can access nested elements by using dotted notation: <code>user.name</code> accesses 
+the <code>name</code> element of the <code>user</code> object.  See Twitter's <a href="https://dev.twitter.com/docs/platform-objects/tweets">tweets</a> 
+structure reference for a list of valid elements. </p>
+
+<p>If you reference a non-existent element, the output column will be empty. 
+If you prefer to have an error message displayed and terminate processing
+specify the <code>-t</code> or <code>--terminate-on-error</code> option. </p>
+
+<p>Example 1: <em>list created_at and text fields for 'elections'</em></p>
+
+<pre><code>python streamer.py -f "created_at,text" elections
+</code></pre>
+
+<p>Example results:</p>
+
+<pre><code>2012-11-09 20:26:47 Volatility the Likely Outcome of Elections http://t.co/trmmSpXp #Barron's
+2012-11-09 20:26:50 @WHLive then why the president ordered Boeing to release the layoff news AFTER the elections?
+</code></pre>
+
+<p>Example 2: <em>list user.name and text fields for tweets containing dogs *and</em> cats*</p>
+
+<pre><code>python streamer.py -f "user.name,text" "dogs cats"
+</code></pre>
+
+<p>Example Results:</p>
+
+<pre><code>User name 1,Cats and dogs in Mexico. http://t.co/gYJvhdvv
+User name 2,I actually like both cats and dogs but I've been an introvert for about 27 years now.
+</code></pre>
+
+<h2>To be done</h2>
+
+<p>See TODO.md</p>
+
+<h2>Known issues</h2>
+
+<ul>
+<li>Needs a bit of cleanup -- obsolete code remains from prior project and should
+be refactored or removed.</li>
+<li>General error handling needs work.<br>
+The current default mode retries the connection with a delay
+in the event of most failures; this keeps Streamer running despite network
+problems or other errors.<br>
+If you specify the <code>--terminate-on-errors</code> (<code>-t</code>) option, Streamer will
+terminate with an error message on errors.  This is a work in progress. </li>
+<li>Configuration (.ini) file error handling needs work.
+Errors due to misconfiguration probably need better handling and reporting. </li>
+<li>Log messages go to stderr.</li>
+</ul><h2>License</h2>
+
+<p>(MIT License) - Copyright (c) 2012 <a href="http://exodusdev.com">Exodus Development, Inc.</a> except 
+where otherwise noted.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Twitter-streamer maintained by <a href="https://github.com/inactivist">inactivist</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-345937-20");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
