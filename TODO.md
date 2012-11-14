@@ -5,7 +5,8 @@ Need to collect a test data set for unit testing, and devise a method of feeding
 the test data set to Streamer.
 
 ## Additional streaming API parameter support ##
-* Location-based filtering using [locations] parameter.
+* Location-based filtering using [locations] parameter. (Implemented in v0.0.4 
+and later.)
 * User-based filtering using [follow] parameter. 
 
 ## Additional streaming API methods support ##
@@ -49,6 +50,9 @@ would result in `bool(retweeted_status)` being used as the output value.
      
 would result in '%s' being used as a format string for the `retweeted_status` field. 
 
+##Configuration via environment variables##
+Dump the config file stuff.  Use environment variables, make them compatible with
+Tweepy's [tests.py](https://github.com/tweepy/tweepy/blob/master/tests.py) example.
 
 [locations]: https://dev.twitter.com/docs/streaming-apis/parameters#locations
 [follow]: https://dev.twitter.com/docs/streaming-apis/parameters#follow

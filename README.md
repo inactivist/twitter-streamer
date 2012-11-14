@@ -10,7 +10,7 @@ It's currently in an early beta test state, needs testing and improvement.
 You will need:
 
  1. Python 2.7, [Tweepy][tweepy] and its prerequisites.
- 2. Your [Twitter API keys][keys].
+ 2. Your [Twitter API keys][twitter-api-keys].
 
 Once you have your API keys, edit default.ini, providing the required elements.
 
@@ -51,15 +51,60 @@ Stream statuses containing (*water* **and** *drink*) *or* (*eat* **and** *lunch*
     python streamer.py "water drink" "eat lunch"
     
 ## Output Format ##
-The default output mode is to dump the raw stream data status text for each received
+The default output mode dumps the unprocessed stream's JSON string for each received
 element, followed by a newline.
 
-Each raw stream element is expected to be a well-formed JSON object, but at present the
+Each raw stream element is expected to be a well-formed JSON object, but the
 stream elements are not separated by commas, nor is the stream wrapped in a JSON
-list.  Therefore, if you expect to parse the output of this program as JSON
-data, you will need to process it into well-formed JSON, or take each element as
-an independent JSON object rather than treat the stream as a JSON array.
+list.  Therefore, if you expect to parse the entire output of this program's JSON
+data, you will need to transform it into well-formed JSON, or take each newline-separated 
+element as an independent JSON object rather than treat the stream as a JSON array.
+
+The program will produce CSV output when using `--fields` (`-f`) field specifiers.
+See [*Field Output Selectors*](#field-output-selectors), below.
 ## Experimental Features ##
+### Location-based searching ###
+As of v0.0.4, you can add location-based search criteria by specifying the `--locations`
+option.  The value is a comma-separated list of longitude, latitude pairs that
+define one or more bounding boxes to include in the stream.  (This implies that
+the number of comma-separated `--location=` values must be a multiple of 4, and
+in fact Tweepy enforces this for us.)  
+
+Example:
+
+    $ python streamer.py --f=place.full_name,coordinates.coordinates,text --locations="-122.75,36.8,-121.75,37.8"
+
+This produces a stream of status updates as CSV, with the `place.full_name`,
+`coordinates.coordinates`, and `text` fields (if available).  Here is 
+an example with longitude and latitude obscured in order to protect privacy:
+
+    "San Jose, CA","[longitude, latitude]",@user is a boy
+    "Oakland, CA","[longitude, latitude]",@user1 @user2 @user3 @user4 @user5 We are all 1 big happy family #BELIEBERS that what we are 24/7 were #STRONG
+    "California, US",,i'll be here awhile #311
+
+where `longitude` and `latitude` are floating-point numbers representing Twitter's
+notion of the Tweet's location.
+ 
+There are several fields that are used to determine location: [`coordinates`][twitter-coordinates],
+[`place`][twitter-place], and `geo` (the latter is deprecated.)  Note that
+Twitter prioritizes the location data by preferring `coordinates` over `place` when 
+determining if a tweet should be included based on geo location.
+
+Note that including `--locations` 
+parameter will not further filter other search terms (such as `track` keywords)
+-- per the [location][parameters-location] reference, it acts as an OR when 
+combined with `track` keywords.
+
+See the Twitter's [Tweets][twitter-tweets] structure reference for more information 
+about location-based information, and the [location][parameters-location] for more
+about the `location` parameter.
+
+#### Issues ####
+Also note that there are [open issues](https://dev.twitter.com/issues/295) regarding
+the accuracy of Twitter's `locations` filtering.  You may need to do your own
+filtering on the results to ensure that results are within the desired bounding 
+box.
+ 
 ### Field Output Selectors ###
 The `-f` (or `--fields`) parameter allows a comma-separated list of output fields.
 The field values will be emitted in the order listed in the given `-f` 
@@ -94,24 +139,35 @@ Example Results:
 ## To be done ##
 See TODO.md
 ## Known issues ##
-* Needs a bit of cleanup -- obsolete code remains from prior project and should
+* Needs a bit of cleanup -- obsolete code remains from prior project and will
 be refactored or removed.
-* General error handling needs work.  
+* Error handling needs work.  
     The current default mode retries the connection with a delay
 in the event of most failures; this keeps Streamer running despite network
 problems or other errors.  
     If you specify the `--terminate-on-errors` (`-t`) option, Streamer will
-    terminate with an error message on errors.  This is a work in progress. 
+    terminate with an error message on errors rather than retrying certain 
+    operations.  This is a work in progress. 
 * Configuration (.ini) file error handling needs work.
     Errors due to misconfiguration probably need better handling and reporting. 
 * Log messages go to stderr.
+* If you receive 401 errors during authentication, ensure your system's date and
+time settings are correct.  [Auth can fail if your clock is out of sync][twitter-401-error] with 
+Twitter's servers.  The `scripts/twitter-time-compare.sh` script shows
+Twitter's server and the local server times for comparison.  
+
 
 ##License##
-(MIT License) - Copyright (c) 2012 Exodus Development, Inc.
+(MIT License) - Copyright (c) 2012 Exodus Development, Inc. except where otherwise
+noted.
   
 [streaming-apis]: https://dev.twitter.com/docs/streaming-apis
 [parameters-track]: https://dev.twitter.com/docs/streaming-apis/parameters#track 
 [statuses-filter]: https://dev.twitter.com/docs/api/1.1/post/statuses/filter
-[keys]: https://dev.twitter.com/docs/faq#7447
+[twitter-api-keys]: https://dev.twitter.com/docs/faq#7447
 [tweepy]: https://github.com/tweepy/tweepy
 [twitter-tweets]: https://dev.twitter.com/docs/platform-objects/tweets
+[parameters-location]: https://dev.twitter.com/docs/streaming-apis/parameters#locations
+[twitter-place]: https://dev.twitter.com/docs/platform-objects/places
+[twitter-coordinates]: https://dev.twitter.com/docs/platform-objects/tweets#obj-coordinates
+[twitter-401-error]: https://dev.twitter.com/discussions/6778
