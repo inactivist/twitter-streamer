@@ -1,3 +1,8 @@
+"""
+Some of this code was extracted from other sources.  Copyright information
+may be found at the links provided.
+"""
+
 def resolve(obj, attrspec):
     """
     Resolve elements from an object.

@@ -13,8 +13,9 @@ logger = logging.getLogger(__name__)
 RETRY_LIMIT = 10
 MISSING_FIELD_VALUE = ''
 
+
 def csv_args(value):
-    """Parse a CSV string list into a list of strings.
+    """Parse a CSV string into a Python list of strings.
 
     Used in command line parsing."""
     return map(str, value.split(","))
@@ -179,6 +180,32 @@ class StreamListener(tweepy.StreamListener):
         # Don't execute any of the base class on_data() handlers. 
         return
 
+def location_query_to_location_filter(tweepy_auth, location_query):
+    api = tweepy.API(tweepy_auth)
+    places = api.geo_search(query=location_query)
+    for place in places:
+        logger.debug('Considering place "%s"' % place.full_name)
+        if place.full_name.lower() == location_query.lower():
+            logger.info('Found matching place: full_name=%(full_name)s id=%(id)s url=%(url)s' % place.__dict__)
+            t = [x for x in place.bounding_box.origin()]
+            t.extend([x for x in place.bounding_box.corner()])
+            logger.info('  location box: %s' % t)
+            return t
+    raise ValueError("'%s': No such place." % location_query)
+
+
+def make_filter_args(opts, tweepy_auth):
+    kwargs = {}
+    if opts.track:
+        kwargs['track'] = opts.track
+    if opts.stall_warnings:
+        kwargs['stall_warnings'] = True
+    if opts.locations:
+        kwargs['locations'] = map(float, opts.locations)
+    if opts.location_query:
+        kwargs['locations'] = location_query_to_location_filter(tweepy_auth, opts.location_query)
+    return kwargs
+
 
 def process_tweets(config, opts):
     """Set up and process incoming streams."""
@@ -195,13 +222,7 @@ def process_tweets(config, opts):
 
     while listener.running:
         try:
-            kwargs = {}
-            if opts.track:
-                kwargs['track'] = opts.track
-            if opts.stall_warnings:
-                kwargs['stall_warnings'] = True
-            if opts.locations:
-                kwargs['locations'] = map(float, opts.locations)
+            kwargs = make_filter_args(opts, auth)
             try:
                 logger.debug('streamer.filter(%s)' % kwargs)
                 streamer.filter(**kwargs)
@@ -299,6 +320,10 @@ def _parse_command_line():
         help='if present, a list of comma-separated bounding boxes.  See Tweepy streaming API location parameter.')
 
     parser.add_argument(
+        '--location-query',
+        help='if present, use value to query Twitter\'s geo/search API to find an exact match.'
+        )
+    parser.add_argument(
         'track',
         nargs='*',
         help='status keywords to be tracked (optional if --locations provided.)'
@@ -311,13 +336,17 @@ if __name__ == "__main__":
     import argparse
     import config
     opts = _parse_command_line()
+    
+    # TODO: Fix this - 
     if opts.locations is not None:
         if len(opts.locations) % 4 != 0:
             raise ValueError('--locations must contain a multiple of four numbers')
-    else:
+    elif opts.location_query is None:
         if not opts.track:
-            raise ValueError('Must provide list of track keywords if --location is not provided.')
+            raise ValueError('Must provide list of track keywords if --location or --location-query is not provided.')
     conf = config.DictConfigParser()
     conf.read(opts.config_file)
     _init_logger(conf, opts)
     process_tweets(conf, opts)
+
+    raise Exception()
