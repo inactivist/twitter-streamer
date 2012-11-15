@@ -4,32 +4,40 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Twitter Streamer by inactivist</title>
-
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
     <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
   </head>
   <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/inactivist/twitter-streamer">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/inactivist/twitter-streamer/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/inactivist/twitter-streamer/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
     <div class="wrapper">
-      <header>
-        <h1 class="header">Twitter Streamer</h1>
-        <p class="header">Dump Twitter API statuses/filter streams using Python and Tweepy</p>
 
-        <ul>
-          <li class="download"><a class="buttons" href="https://github.com/inactivist/twitter-streamer/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/inactivist/twitter-streamer/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/inactivist/twitter-streamer">View On GitHub</a></li>
-        </ul>
-
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/inactivist">inactivist</a></p>
-
-
-      </header>
       <section>
+        <div id="title">
+          <h1>Twitter Streamer</h1>
+          <p>Dump Twitter API statuses/filter streams using Python and Tweepy</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/inactivist">inactivist</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
         <p><em><a href="https://github.com/inactivist/twitter-streamer">Twitter Streamer</a></em> is a Python command-line utility to dump <a href="https://dev.twitter.com/docs/streaming-apis">Twitter streaming API</a> 
 <a href="https://dev.twitter.com/docs/api/1.1/post/statuses/filter">statuses/filter</a> method data to stdout.</p>
 
@@ -63,15 +71,12 @@ It's currently in an early beta test state, needs testing and improvement.
 <pre><code>python streamer.py "water drink" "eat lunch"
 </code></pre>
 
-<h2>Experimental Features</h2>
+<h2>Deluxe Bonus Features</h2>
 
 <h3>Location-based searching</h3>
 
-<p>As of v0.0.4, you can add location-based search criteria by specifying the <code>--locations</code>
-option.  The value is a comma-separated list of longitude, latitude pairs that
-define one or more bounding boxes to include in the stream.  (This implies that
-the number of comma-separated <code>--location=</code> values must be a multiple of 4, and
-in fact Tweepy enforces this for us.)  </p>
+<p>As of v0.0.4, you can add location-based (geocoding) search criteria by specifying the <code>--locations</code>
+option.  </p>
 
 <p>Example:</p>
 
@@ -90,42 +95,12 @@ an example with longitude and latitude obscured in order to protect privacy:</p>
 <p>where <code>longitude</code> and <code>latitude</code> are floating-point numbers representing Twitter's
 notion of the Tweet's location.</p>
 
-<p>There are several fields that are used to determine location: <a href="https://dev.twitter.com/docs/platform-objects/tweets#obj-coordinates"><code>coordinates</code></a>,
-<a href="https://dev.twitter.com/docs/platform-objects/places"><code>place</code></a>, and <code>geo</code> (the latter is deprecated.)  Note that
-Twitter prioritizes the location data by preferring <code>coordinates</code> over <code>place</code> when 
-determining if a tweet should be included based on geo location.</p>
-
-<p>Note that including <code>--locations</code> 
-parameter will not further filter other search terms (such as <code>track</code> keywords)
--- per the <a href="https://dev.twitter.com/docs/streaming-apis/parameters#locations">location</a> reference, it acts as an OR when 
-combined with <code>track</code> keywords.</p>
-
-<p>See the Twitter's <a href="https://dev.twitter.com/docs/platform-objects/tweets">Tweets</a> structure reference for more information 
-about location-based information, and the <a href="https://dev.twitter.com/docs/streaming-apis/parameters#locations">location</a> for more
-about the <code>location</code> parameter.</p>
-
 <h4>Location Query</h4>
 
 <p>Recent development versions (0.0.5-dev and higher) support a new option:
 <code>--location-query</code>.  It allows you to reference a Twitter Place name, and 
 automatically use the resulting coordinates as the value of the <code>--location</code> 
-parameter.  (Currently the resulting <code>--location-query</code> bounding box overrides 
-any values passed in the <code>--location</code> command line option)</p>
-
-<p>The <code>--location-query</code> value is passed to the Tweepy <code>API.geo_search</code> method 
-(which uses the Twitter <code>[geo/search][twitter-go-search]</code>) as the <code>query</code> parameter.</p>
-
-<p>The value is case-insensitive, and the value must match an existing Twitter Place
-<code>full_name</code> field.  In general, you can use this pattern:</p>
-
-<pre><code> --location-query="{city-name}, {state-abbrev}"
- --location-query="{state-name}, US"    
-</code></pre>
-
-<p>where {city-name} is a well-known city name, {state-name} is a full state name,
-and {state-abbrev} is a standard two-letter state abbreviation.  You can search 
-for other types of names, but you'll have to do you own research or experiment
-to find valid values.  </p>
+parameter.  </p>
 
 <p>Example:</p>
 
@@ -133,21 +108,14 @@ to find valid values.  </p>
 --location-query="California, US" 
 </code></pre>
 
-<p>The Twitter <code>[geo/search][twitter-geo-search]</code> API may fail to return expected matches if you deviate from the pattern shown above.  If values are returned from the <code>geo/search</code> method, place name matching is done without regard to spaces.</p>
-
-<p>If in doubt, enable full debug logging, by passing 
-<code>-l DEBUG</code> on the command line.</p>
-
 <h2>GO GIT IT</h2>
 
-<p><a href="https://github.com/inactivist/twitter-streamer">Twitter Streamer</a> on github.</p>
+<p>Want to know more?  Visit <a href="https://github.com/inactivist/twitter-streamer">Twitter Streamer</a> on github.</p>
       </section>
-      <footer>
-        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-      </footer>
+
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		          <script type="text/javascript">
+              <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
