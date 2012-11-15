@@ -1,42 +1,36 @@
 <!doctype html>
-<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
-<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Twitter Streamer by inactivist</title>
 
-  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
-  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script type="text/javascript" src="javascripts/script.js"></script>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Twitter Streamer</h1>
+        <p class="header">Dump Twitter API statuses/filter streams using Python and Tweepy</p>
 
-  <title>Twitter-streamer</title>
-  <meta name="description" content="Dump Twitter API statuses/filter streams using Python and Tweepy">
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/inactivist/twitter-streamer/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/inactivist/twitter-streamer/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/inactivist/twitter-streamer">View On GitHub</a></li>
+        </ul>
 
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/inactivist">inactivist</a></p>
 
-</head>
 
-<body>
-
-  <div class="wrapper">
-    <header>
-      <h1 class="title">Twitter-streamer</h1>
-    </header>
-    <div id="container">
-      <p class="tagline">Dump Twitter API statuses/filter streams using Python and Tweepy</p>
-      <div id="main" role="main">
-        <div class="download-bar">
-        <div class="inner">
-          <a href="https://github.com/inactivist/twitter-streamer/tarball/master" class="download-button tar"><span>Download</span></a>
-          <a href="https://github.com/inactivist/twitter-streamer/zipball/master" class="download-button zip"><span>Download</span></a>
-          <a href="https://github.com/inactivist/twitter-streamer" class="code">View Twitter-streamer on GitHub</a>
-        </div>
-        <span class="blc"></span><span class="trc"></span>
-        </div>
-        <article class="markdown-body">
-          <p><em>Twitter Streamer</em> is a Python command-line utility to dump <a href="https://dev.twitter.com/docs/streaming-apis">Twitter streaming API</a> 
+      </header>
+      <section>
+        <p><em><a href="https://github.com/inactivist/twitter-streamer">Twitter Streamer</a></em> is a Python command-line utility to dump <a href="https://dev.twitter.com/docs/streaming-apis">Twitter streaming API</a> 
 <a href="https://dev.twitter.com/docs/api/1.1/post/statuses/filter">statuses/filter</a> method data to stdout.</p>
 
 <p>It began life as a testing tool for <a href="https://github.com/tweepy/tweepy">Tweepy</a>, and to satisfy my curiosity.
@@ -119,7 +113,7 @@ parameter.  (Currently the resulting <code>--location-query</code> bounding box 
 any values passed in the <code>--location</code> command line option)</p>
 
 <p>The <code>--location-query</code> value is passed to the Tweepy <code>API.geo_search</code> method 
-(which uses the Twitter [geo/search][twitter-go-search]) as the <code>query</code> parameter.</p>
+(which uses the Twitter <code>[geo/search][twitter-go-search]</code>) as the <code>query</code> parameter.</p>
 
 <p>The value is case-insensitive, and the value must match an existing Twitter Place
 <code>full_name</code> field.  In general, you can use this pattern:</p>
@@ -139,31 +133,21 @@ to find valid values.  </p>
 --location-query="California, US" 
 </code></pre>
 
-<p>Matching is done without regard to spaces, but
-the Twitter API might fail to return expected matches if you deviate too far from the 
-pattern shown above.  If in doubt, enable full debug logging, by passing 
+<p>The Twitter <code>[geo/search][twitter-geo-search]</code> API may fail to return expected matches if you deviate from the pattern shown above.  If values are returned from the <code>geo/search</code> method, place name matching is done without regard to spaces.</p>
+
+<p>If in doubt, enable full debug logging, by passing 
 <code>-l DEBUG</code> on the command line.</p>
-        </article>
-      </div>
+
+<h2>GO GIT IT</h2>
+
+<p><a href="https://github.com/inactivist/twitter-streamer">Twitter Streamer</a> on github.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
     </div>
-    <footer>
-      <div class="owner">
-      <p><a href="https://github.com/inactivist" class="avatar"><img src="https://secure.gravatar.com/avatar/2fb7c6c7336221ba5ec5ee6a84f723d9?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="48" height="48"/></a> <a href="https://github.com/inactivist">inactivist</a> maintains <a href="https://github.com/inactivist/twitter-streamer">Twitter-streamer</a></p>
-
-
-      </div>
-      <div class="creds">
-        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
-      </div>
-    </footer>
-  </div>
-  <div class="current-section">
-    <a href="#top">Scroll to top</a>
-    <a href="https://github.com/inactivist/twitter-streamer/tarball/master" class="tar">tar</a><a href="https://github.com/inactivist/twitter-streamer/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
-    <p class="name"></p>
-  </div>
-
-            <script type="text/javascript">
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -174,5 +158,5 @@ pattern shown above.  If in doubt, enable full debug logging, by passing
             } catch(err) {}
           </script>
 
-</body>
+  </body>
 </html>
