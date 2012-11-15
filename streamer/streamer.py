@@ -197,10 +197,13 @@ def location_query_to_location_filter(tweepy_auth, location_query):
         # Normalize spaces
         if place.full_name.replace(' ', '').lower() == normalized_location_query.lower():
             logger.info('Found matching place: full_name=%(full_name)s id=%(id)s url=%(url)s' % place.__dict__)
-            t = [x for x in place.bounding_box.origin()]
-            t.extend([x for x in place.bounding_box.corner()])
-            logger.info('  location box: %s' % t)
-            return t
+            if place.bounding_box is not None:
+                t = [x for x in place.bounding_box.origin()]
+                t.extend([x for x in place.bounding_box.corner()])
+                logger.info('  location box: %s' % t)
+                return t
+            else:
+                raise ValueError("Place '%s' does not have a bounding box." % place.full_name)
     raise ValueError("'%s': No such place." % location_query)
 
 

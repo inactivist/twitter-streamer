@@ -112,25 +112,32 @@ The `--location-query` value is passed to the Tweepy `API.geo_search` method
 The value is case-insensitive, and the value must match an existing Twitter Place
 `full_name` field.  In general, you can use this pattern:
 
-     --location-query="{city-name}, {state-abbrev}"    
+     --location-query="{city-name}, {state-abbrev}"
+     --location-query="{state-name}, US"    
 
-where {city-name} is a well-known city name, and {state-abbrev} is a standard
-two-letter state abbreviation.  
+where {city-name} is a well-known city name, {state-name} is a full state name,
+and {state-abbrev} is a standard two-letter state abbreviation.  You can search 
+for other types of names, but you'll have to do you own research or experiment
+to find valid values.  
 
 Example:
 
-    --location-query="San Jose, CA" 
+    --location-query="San Jose, CA"
+    --location-query="California, US" 
 
 Some attempt is made to ignore whitespace, but
 the Twitter API might fail to return expected matches if you deviate too far from the 
 pattern shown above.  If in doubt, enable full debug logging, by passing 
 `-l DEBUG` on the command line.
 
-#### Issues ####
-Also note that there are [open issues](https://dev.twitter.com/issues/295) regarding
+#### Location Issues ####
+* Note that there are [open issues](https://dev.twitter.com/issues/295) regarding
 the accuracy of Twitter's `locations` filtering.  You may need to do your own
 post-filtering of the results to ensure they are within the desired bounding 
 box.
+* Using `--location-query="United States"` results in an error because [Twitter
+doesn't return a bounding box for the United States][lookup-usa].  It does for 
+[Canada][lookup-canada].  Go figure. 
  
 ### Field Output Selectors ###
 The `-f` (or `--fields`) parameter allows a comma-separated list of output fields.
@@ -199,3 +206,5 @@ noted.  Please refer to LICENSE.md for the gory details.
 [twitter-coordinates]: https://dev.twitter.com/docs/platform-objects/tweets#obj-coordinates
 [twitter-401-error]: https://dev.twitter.com/discussions/6778
 [twitter-geo-search]: https://dev.twitter.com/docs/api/1/get/geo/search
+[lookup-usa]: http://api.twitter.com/1/geo/id/96683cc9126741d1.json
+[lookup-canada]: http://api.twitter.com/1/geo/id/3376992a082d67c7.json
