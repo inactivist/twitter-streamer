@@ -1,56 +1,47 @@
 <!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Twitter-streamer by inactivist</title>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>Twitter-streamer</h1>
-        <p>Dump Twitter API statuses/filter streams using Python and Tweepy</p>
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
+  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
 
-        <p class="view"><a href="https://github.com/inactivist/twitter-streamer">View the Project on GitHub <small>inactivist/twitter-streamer</small></a></p>
+  <title>Twitter-streamer</title>
+  <meta name="description" content="Dump Twitter API statuses/filter streams using Python and Tweepy">
 
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-        <ul>
-          <li><a href="https://github.com/inactivist/twitter-streamer/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/inactivist/twitter-streamer/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/inactivist/twitter-streamer">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <p><em>Twitter Streamer</em> is a Python command-line utility to dump <a href="https://dev.twitter.com/docs/streaming-apis">Twitter streaming API</a> 
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Twitter-streamer</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">Dump Twitter API statuses/filter streams using Python and Tweepy</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/inactivist/twitter-streamer/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/inactivist/twitter-streamer/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/inactivist/twitter-streamer" class="code">View Twitter-streamer on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <p><em>Twitter Streamer</em> is a Python command-line utility to dump <a href="https://dev.twitter.com/docs/streaming-apis">Twitter streaming API</a> 
 <a href="https://dev.twitter.com/docs/api/1.1/post/statuses/filter">statuses/filter</a> method data to stdout.</p>
 
 <p>It began life as a testing tool for <a href="https://github.com/tweepy/tweepy">Tweepy</a>, and to satisfy my curiosity.
 It's currently in an early beta test state, needs testing and improvement. 
 (see <a href="#known-issues">Known issues</a>, below)</p>
-
-<h2>Prerequisites</h2>
-
-<p>You will need:</p>
-
-<ol>
-<li>Python 2.7, <a href="https://github.com/tweepy/tweepy">Tweepy</a> and its prerequisites.</li>
-<li>Your <a href="https://dev.twitter.com/docs/faq#7447">Twitter API keys</a>.</li>
-</ol><p>Once you have your API keys, edit default.ini, providing the required elements.</p>
-
-<pre><code>[twitter_api]
-# You must use the keys provided by Twitter for your account.
-consumer_key: YOUR_CONSUMER_KEY
-consumer_secret: YOUR_CONSUMER_SECRET
-access_token_key: YOUR_ACCESS_TOKEN_KEY
-access_token_secret: YOUR_ACCESS_TOKEN_SECRET
-</code></pre>
 
 <h2>Usage</h2>
 
@@ -60,15 +51,6 @@ access_token_secret: YOUR_ACCESS_TOKEN_SECRET
 </code></pre>
 
 <p>You can print a usage summary by invoking <code>streamer.py</code> with the <code>-h</code> or <code>--help</code> option.</p>
-
-<p>The positional <em>track</em> parameter provides one or more <a href="https://dev.twitter.com/docs/streaming-apis/parameters#track">track search terms</a> for the <a href="https://dev.twitter.com/docs/api/1.1/post/statuses/filter">Twitter 
-<em>statuses/filter</em> API</a>.  Commas denote an <em>or</em> relationship, while spaces
-denote an <em>and</em> relationship.  </p>
-
-<p>You can provide multiple <em>track</em> parameters, which will expand the search terms.</p>
-
-<p>Please refer to the <a href="https://dev.twitter.com/docs/streaming-apis/parameters#track">track</a> documentation for specific limitations and 
-usage examples.</p>
 
 <h2>Examples</h2>
 
@@ -87,85 +69,101 @@ usage examples.</p>
 <pre><code>python streamer.py "water drink" "eat lunch"
 </code></pre>
 
-<h2>Output Format</h2>
-
-<p>The default output mode is to dump the raw stream data status text for each received
-element, followed by a newline.</p>
-
-<p>Each raw stream element is expected to be a well-formed JSON object, but at present the
-stream elements are not separated by commas, nor is the stream wrapped in a JSON
-list.  Therefore, if you expect to parse the output of this program as JSON
-data, you will need to process it into well-formed JSON, or take each element as
-an independent JSON object rather than treat the stream as a JSON array.</p>
-
 <h2>Experimental Features</h2>
 
-<h3>Field Output Selectors</h3>
+<h3>Location-based searching</h3>
 
-<p>The <code>-f</code> (or <code>--fields</code>) parameter allows a comma-separated list of output fields.
-The field values will be emitted in the order listed in the given <code>-f</code> 
-parameter value.  Output will be formatted as CSV records.</p>
+<p>As of v0.0.4, you can add location-based search criteria by specifying the <code>--locations</code>
+option.  The value is a comma-separated list of longitude, latitude pairs that
+define one or more bounding boxes to include in the stream.  (This implies that
+the number of comma-separated <code>--location=</code> values must be a multiple of 4, and
+in fact Tweepy enforces this for us.)  </p>
 
-<p>You can access nested elements by using dotted notation: <code>user.name</code> accesses 
-the <code>name</code> element of the <code>user</code> object.  See Twitter's <a href="https://dev.twitter.com/docs/platform-objects/tweets">tweets</a> 
-structure reference for a list of valid elements. </p>
+<p>Example:</p>
 
-<p>If you reference a non-existent element, the output column will be empty. 
-If you prefer to have an error message displayed and terminate processing
-specify the <code>-t</code> or <code>--terminate-on-error</code> option. </p>
-
-<p>Example 1: <em>list created_at and text fields for 'elections'</em></p>
-
-<pre><code>python streamer.py -f "created_at,text" elections
+<pre><code>$ python streamer.py --f=place.full_name,coordinates.coordinates,text --locations="-122.75,36.8,-121.75,37.8"
 </code></pre>
 
-<p>Example results:</p>
+<p>This produces a stream of status updates as CSV, with the <code>place.full_name</code>,
+<code>coordinates.coordinates</code>, and <code>text</code> fields (if available).  Here is 
+an example with longitude and latitude obscured in order to protect privacy:</p>
 
-<pre><code>2012-11-09 20:26:47 Volatility the Likely Outcome of Elections http://t.co/trmmSpXp #Barron's
-2012-11-09 20:26:50 @WHLive then why the president ordered Boeing to release the layoff news AFTER the elections?
+<pre><code>"San Jose, CA","[longitude, latitude]",@user is a boy
+"Oakland, CA","[longitude, latitude]",@user1 @user2 @user3 @user4 @user5 We are all 1 big happy family #BELIEBERS that what we are 24/7 were #STRONG
+"California, US",,i'll be here awhile #311
 </code></pre>
 
-<p>Example 2: <em>list user.name and text fields for tweets containing dogs *and</em> cats*</p>
+<p>where <code>longitude</code> and <code>latitude</code> are floating-point numbers representing Twitter's
+notion of the Tweet's location.</p>
 
-<pre><code>python streamer.py -f "user.name,text" "dogs cats"
+<p>There are several fields that are used to determine location: <a href="https://dev.twitter.com/docs/platform-objects/tweets#obj-coordinates"><code>coordinates</code></a>,
+<a href="https://dev.twitter.com/docs/platform-objects/places"><code>place</code></a>, and <code>geo</code> (the latter is deprecated.)  Note that
+Twitter prioritizes the location data by preferring <code>coordinates</code> over <code>place</code> when 
+determining if a tweet should be included based on geo location.</p>
+
+<p>Note that including <code>--locations</code> 
+parameter will not further filter other search terms (such as <code>track</code> keywords)
+-- per the <a href="https://dev.twitter.com/docs/streaming-apis/parameters#locations">location</a> reference, it acts as an OR when 
+combined with <code>track</code> keywords.</p>
+
+<p>See the Twitter's <a href="https://dev.twitter.com/docs/platform-objects/tweets">Tweets</a> structure reference for more information 
+about location-based information, and the <a href="https://dev.twitter.com/docs/streaming-apis/parameters#locations">location</a> for more
+about the <code>location</code> parameter.</p>
+
+<h4>Location Query</h4>
+
+<p>Recent development versions (0.0.5-dev and higher) support a new option:
+<code>--location-query</code>.  It allows you to reference a Twitter Place name, and 
+automatically use the resulting coordinates as the value of the <code>--location</code> 
+parameter.  (Currently the resulting <code>--location-query</code> bounding box overrides 
+any values passed in the <code>--location</code> command line option)</p>
+
+<p>The <code>--location-query</code> value is passed to the Tweepy <code>API.geo_search</code> method 
+(which uses the Twitter [geo/search][twitter-go-search]) as the <code>query</code> parameter.</p>
+
+<p>The value is case-insensitive, and the value must match an existing Twitter Place
+<code>full_name</code> field.  In general, you can use this pattern:</p>
+
+<pre><code> --location-query="{city-name}, {state-abbrev}"
+ --location-query="{state-name}, US"    
 </code></pre>
 
-<p>Example Results:</p>
+<p>where {city-name} is a well-known city name, {state-name} is a full state name,
+and {state-abbrev} is a standard two-letter state abbreviation.  You can search 
+for other types of names, but you'll have to do you own research or experiment
+to find valid values.  </p>
 
-<pre><code>User name 1,Cats and dogs in Mexico. http://t.co/gYJvhdvv
-User name 2,I actually like both cats and dogs but I've been an introvert for about 27 years now.
+<p>Example:</p>
+
+<pre><code>--location-query="San Jose, CA"
+--location-query="California, US" 
 </code></pre>
 
-<h2>To be done</h2>
-
-<p>See TODO.md</p>
-
-<h2>Known issues</h2>
-
-<ul>
-<li>Needs a bit of cleanup -- obsolete code remains from prior project and should
-be refactored or removed.</li>
-<li>General error handling needs work.<br>
-The current default mode retries the connection with a delay
-in the event of most failures; this keeps Streamer running despite network
-problems or other errors.<br>
-If you specify the <code>--terminate-on-errors</code> (<code>-t</code>) option, Streamer will
-terminate with an error message on errors.  This is a work in progress. </li>
-<li>Configuration (.ini) file error handling needs work.
-Errors due to misconfiguration probably need better handling and reporting. </li>
-<li>Log messages go to stderr.</li>
-</ul><h2>License</h2>
-
-<p>(MIT License) - Copyright (c) 2012 <a href="http://exodusdev.com">Exodus Development, Inc.</a> except 
-where otherwise noted.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/inactivist">inactivist</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+<p>Matching is done without regard to spaces, but
+the Twitter API might fail to return expected matches if you deviate too far from the 
+pattern shown above.  If in doubt, enable full debug logging, by passing 
+<code>-l DEBUG</code> on the command line.</p>
+        </article>
+      </div>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-              <script type="text/javascript">
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/inactivist" class="avatar"><img src="https://secure.gravatar.com/avatar/2fb7c6c7336221ba5ec5ee6a84f723d9?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="48" height="48"/></a> <a href="https://github.com/inactivist">inactivist</a> maintains <a href="https://github.com/inactivist/twitter-streamer">Twitter-streamer</a></p>
+
+
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/inactivist/twitter-streamer/tarball/master" class="tar">tar</a><a href="https://github.com/inactivist/twitter-streamer/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
+
+            <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -176,5 +174,5 @@ where otherwise noted.</p>
             } catch(err) {}
           </script>
 
-  </body>
+</body>
 </html>
