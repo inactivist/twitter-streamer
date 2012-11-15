@@ -20,6 +20,13 @@ def csv_args(value):
     Used in command line parsing."""
     return map(str, value.split(","))
 
+def locations_type(value):
+    """Conversion and validation for --locations= argument."""
+    parsed = csv_args(value)
+    if len(parsed) % 4 != 0:
+        raise argparse.ArgumentTypeError('must contain a multiple of four floating-point numbers defining the locations to include.')
+    print parsed
+    return parsed
 
 def _get_version():
     from __init__ import __version__
@@ -316,7 +323,7 @@ def _parse_command_line():
 
     parser.add_argument(
         '--locations',
-        type=csv_args,
+        type=locations_type,
         help='if present, a list of comma-separated bounding boxes.  See Tweepy streaming API location parameter.')
 
     parser.add_argument(
@@ -338,15 +345,11 @@ if __name__ == "__main__":
     opts = _parse_command_line()
     
     # TODO: Fix this - 
-    if opts.locations is not None:
-        if len(opts.locations) % 4 != 0:
-            raise ValueError('--locations must contain a multiple of four numbers')
-    elif opts.location_query is None:
+    if opts.location_query is None and opts.locations is None:
         if not opts.track:
-            raise ValueError('Must provide list of track keywords if --location or --location-query is not provided.')
+            sys.stderr.write('%s: error: Must provide list of track keywords if --location or --location-query is not provided.\n' % __file__)
+            sys.exit()
     conf = config.DictConfigParser()
     conf.read(opts.config_file)
     _init_logger(conf, opts)
     process_tweets(conf, opts)
-
-    raise Exception()
