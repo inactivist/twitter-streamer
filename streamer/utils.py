@@ -20,6 +20,7 @@ def resolve(obj, attrspec):
 def resolve_with_default(obj, attrspec, default=None):
     """
     Resolve elements from an object, with a default value.
+    This works with objects AND dicts.
     """
     result = default
     try:
@@ -39,6 +40,9 @@ def multi_getattr(obj, attr, default=None):
     it, an exception is raised when a missing attribute is encountered.
 
     From http://code.activestate.com/recipes/577346-getattr-with-arbitrary-depth/
+    
+    Deprecated, does not work with dictionaries.  Use resolve_with_default() 
+    instead.
     """
     attributes = attr.split(".")
     for i in attributes:
