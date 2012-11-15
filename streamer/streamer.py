@@ -226,10 +226,15 @@ def process_tweets(config, opts):
     streamer = tweepy.Stream(auth=auth, listener=listener, retry_count=9999,
         retry_time=1, buffer_size=16000)
 
+    try:
+        kwargs = make_filter_args(opts, auth)
+    except ValueError as e:
+        listener.running = False
+        sys.stderr.write("%s: error: %s\n" % (__file__, e.message))
+        return
 
     while listener.running:
         try:
-            kwargs = make_filter_args(opts, auth)
             try:
                 logger.debug('streamer.filter(%s)' % kwargs)
                 streamer.filter(**kwargs)
@@ -259,17 +264,43 @@ def process_tweets(config, opts):
 
 def _parse_command_line():
     parser = argparse.ArgumentParser(description='Twitter Stream dumper v%s' % _get_version())
+
+    parser.add_argument(
+        '-f',
+        '--fields',
+        type=csv_args,
+        metavar='field-list',
+        help='list of fields to output as CSV columns.  If not set, raw status text (all fields) as a large JSON structure.')
+
+    parser.add_argument(
+        '--locations',
+        type=locations_type,
+        metavar='bounding-box-coordinates',
+        help='a list of comma-separated bounding boxes to include.  See Tweepy streaming API location parameter documentation.')
+
+    parser.add_argument(
+        '--location-query',
+        metavar='location-full-name',
+        help=r"""query Twitter's geo/search API to find an exact match for provided
+         name, which is then converted to a locations bounding box and used as
+         the --location parameter."""
+        )
+
     parser.add_argument(
         '-c',
         '--config-file',
-        default='default.ini'
+        metavar='config-file-name',
+        default='default.ini',
+        help='use configuration settings from the file given in this option.'
+        
         )
 
     parser.add_argument(
         '-l',
         '--log-level',
         default='WARN',
-        help="set log level to one used by logging module.  Default is WARN."
+        metavar='log-level',
+        help="set log level to one recognized by core logging module.  Default is WARN."
         )
 
 #    parser.add_argument(
@@ -283,6 +314,7 @@ def _parse_command_line():
         '-r',
         '--report-lag',
         type=int,
+        metavar='seconds',
         help='Report time difference between local system and Twitter stream server time exceeding this number of seconds.'
         )
 
@@ -291,6 +323,7 @@ def _parse_command_line():
         '--user-lang',
         type=csv_args,
         default='en',
+        metavar='language-code',
         help="""BCP-47 language filter(s).  A comma-separate list of language codes.
         Default is "en", which will include
         only tweets made by users having English (en) as their profile language.
@@ -305,12 +338,6 @@ def _parse_command_line():
         )
 
     parser.add_argument(
-        '-f',
-        '--fields',
-        type=csv_args,
-        help='list of fields to output as CSV columns.  If not set, output raw status text, a large JSON structure.')
-
-    parser.add_argument(
         '-t',
         '--terminate-on-error',
         action='store_true',
@@ -321,15 +348,6 @@ def _parse_command_line():
         action='store_true',
         help='if set, request stall warnings from Twitter streaming API if Tweepy support them.')
 
-    parser.add_argument(
-        '--locations',
-        type=locations_type,
-        help='if present, a list of comma-separated bounding boxes.  See Tweepy streaming API location parameter.')
-
-    parser.add_argument(
-        '--location-query',
-        help='if present, use value to query Twitter\'s geo/search API to find an exact match.'
-        )
     parser.add_argument(
         'track',
         nargs='*',
