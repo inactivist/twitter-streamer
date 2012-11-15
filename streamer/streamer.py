@@ -189,10 +189,13 @@ class StreamListener(tweepy.StreamListener):
 
 def location_query_to_location_filter(tweepy_auth, location_query):
     api = tweepy.API(tweepy_auth)
+    # Normalize whitespace to single spaces.
     places = api.geo_search(query=location_query)
+    normalized_location_query = location_query.replace(' ', '')
     for place in places:
         logger.debug('Considering place "%s"' % place.full_name)
-        if place.full_name.lower() == location_query.lower():
+        # Normalize spaces
+        if place.full_name.replace(' ', '').lower() == normalized_location_query.lower():
             logger.info('Found matching place: full_name=%(full_name)s id=%(id)s url=%(url)s' % place.__dict__)
             t = [x for x in place.bounding_box.origin()]
             t.extend([x for x in place.bounding_box.corner()])
@@ -327,26 +330,26 @@ def _parse_command_line():
         help="""BCP-47 language filter(s).  A comma-separate list of language codes.
         Default is "en", which will include
         only tweets made by users having English (en) as their profile language.
-        If set, incoming status user\'s language must match one these languages."""
+        Incoming status user\'s language must match one these languages."""
         )
 
     parser.add_argument(
         '-n',
         '--no-retweets',
         action='store_true',
-        help='if set, don\'t include statuses identified as retweets.'
+        help='don\'t include statuses identified as retweets.'
         )
 
     parser.add_argument(
         '-t',
         '--terminate-on-error',
         action='store_true',
-        help='terminate processing on errors if set.')
+        help='terminate processing on errors.')
 
     parser.add_argument(
         '--stall-warnings',
         action='store_true',
-        help='if set, request stall warnings from Twitter streaming API if Tweepy support them.')
+        help='request stall warnings from Twitter streaming API if Tweepy supports them.')
 
     parser.add_argument(
         'track',

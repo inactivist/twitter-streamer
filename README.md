@@ -99,10 +99,37 @@ See the Twitter's [Tweets][twitter-tweets] structure reference for more informat
 about location-based information, and the [location][parameters-location] for more
 about the `location` parameter.
 
+#### Location Query ####
+Recent development versions (0.0.5-dev and higher) support a new option:
+`--location-query`.  It allows you to reference a Twitter Place name, and 
+automatically use the resulting coordinates as the value of the `--location` 
+parameter.  (Currently the resulting `--location-query` bounding box overrides 
+any values passed in the `--location` command line option)
+
+The `--location-query` value is passed to the Tweepy `API.geo_search` method 
+(which uses the Twitter [geo/search][twitter-go-search]) as the `query` parameter.
+ 
+The value is case-insensitive, and the value must match an existing Twitter Place
+`full_name` field.  In general, you can use this pattern:
+
+     --location-query="{city-name}, {state-abbrev}"    
+
+where {city-name} is a well-known city name, and {state-abbrev} is a standard
+two-letter state abbreviation.  
+
+Example:
+
+    --location-query="San Jose, CA" 
+
+Some attempt is made to ignore whitespace, but
+the Twitter API might fail to return expected matches if you deviate too far from the 
+pattern shown above.  If in doubt, enable full debug logging, by passing 
+`-l DEBUG` on the command line.
+
 #### Issues ####
 Also note that there are [open issues](https://dev.twitter.com/issues/295) regarding
 the accuracy of Twitter's `locations` filtering.  You may need to do your own
-filtering on the results to ensure that results are within the desired bounding 
+post-filtering of the results to ensure they are within the desired bounding 
 box.
  
 ### Field Output Selectors ###
@@ -159,7 +186,7 @@ Twitter's server and the local server times for comparison.
 
 ##License##
 (MIT License) - Copyright (c) 2012 Exodus Development, Inc. except where otherwise
-noted.
+noted.  Please refer to LICENSE.md for the gory details.
   
 [streaming-apis]: https://dev.twitter.com/docs/streaming-apis
 [parameters-track]: https://dev.twitter.com/docs/streaming-apis/parameters#track 
@@ -171,3 +198,4 @@ noted.
 [twitter-place]: https://dev.twitter.com/docs/platform-objects/places
 [twitter-coordinates]: https://dev.twitter.com/docs/platform-objects/tweets#obj-coordinates
 [twitter-401-error]: https://dev.twitter.com/discussions/6778
+[twitter-geo-search]: https://dev.twitter.com/docs/api/1/get/geo/search
