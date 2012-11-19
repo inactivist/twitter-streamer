@@ -136,6 +136,7 @@ class StreamListener(tweepy.StreamListener):
                         # that's how it's encoded. 
                         # If it's not a string value, we eat the exception, 
                         # as value is already set.
+                        # See: tweepy.utils.convert_to_utf8_str() for example conversion.
                         try:
                             value = value.encode('utf8')
                         except AttributeError:
@@ -319,6 +320,9 @@ def _parse_command_line():
         metavar='bounding-box-coordinates',
         help='a list of comma-separated bounding boxes to include.  See Tweepy streaming API location parameter documentation.')
 
+    # TODO: Accept lists of place names (multiple arguments)
+    # Example: --location-query=usa --location-query=Canada
+    # Construct a list of bounding boxes; pass to Twitter.
     parser.add_argument(
         '--location-query',
         metavar='location-full-name',
