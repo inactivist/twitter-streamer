@@ -3,5 +3,5 @@
 dev.ini
 *.cfg
 *.pyc
-
+streamer/test_data/*
 
