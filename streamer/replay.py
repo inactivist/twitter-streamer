@@ -12,22 +12,37 @@ import time
 import datetime
 import simplejson as json
 
+TWITTER_TIME_FORMAT = '%a %b %d %H:%M:%S +0000 %Y'
+
 def parse_twitter_time(time_str):
-    return datetime.datetime.strptime(time_str, '%a %b %d %H:%M:%S +0000 %Y')
+    return datetime.datetime.strptime(time_str, TWITTER_TIME_FORMAT)
 
 
 def datetime_to_unixtime(dt):
     return time.mktime(dt.timetuple())
 
+def datetime_to_twitter_time_string(dt):
+    # Convert datetime to "Wed Aug 27 13:08:45 +0000 2008" format.
+    return dt.strftime(TWITTER_TIME_FORMAT)
 
-start_time = None
+
+last_time = None
+start_time = datetime.datetime.utcnow()
+
 for line in sys.stdin:
     status = json.loads(line)
-    if start_time:
-        pass
+    # If first item, emit it immediately.
+    # Else, calculate time delta from last status and delay the appropriate amount of time,
+    # if any is required.
+    if not last_time:
+        last_time = parse_twitter_time(status.get('created_at'))
     else:
-        # Get start time from first status.
-        start_time = parse_twitter_time(status.get('created_at'))
-        print start_time
-        print datetime_to_unixtime(start_time)
-        sys.exit()
+        # get time delta in seconds.
+        current = parse_twitter_time(status.get('created_at', last_time))
+        delta = current - last_time
+        sleep_time = delta.total_seconds()
+        if sleep_time < 0: sleep_time = 0
+        last_time = current
+        time.sleep(sleep_time)
+    sys.stdout.write(line)
+    sys.stdout.flush()
