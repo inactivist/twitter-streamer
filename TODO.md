@@ -1,3 +1,7 @@
+## Capture Time Limits ##
+Set a limit (elapsed seconds?) for capture?  End capture after that time expires.
+Perhaps useful for capturing data for later playback (testing.)
+
 ## Unit tests ##
 We need some.
 

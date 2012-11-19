@@ -125,7 +125,7 @@ Example:
     --location-query="San Jose, CA"
     --location-query="California, US" 
 
-Some attempt is made to ignore whitespace, but
+Matching is done without regard to spaces, but
 the Twitter API might fail to return expected matches if you deviate too far from the 
 pattern shown above.  If in doubt, enable full debug logging, by passing 
 `-l DEBUG` on the command line.
