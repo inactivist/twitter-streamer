@@ -372,7 +372,9 @@ def _parse_command_line():
         help="""BCP-47 language filter(s).  A comma-separate list of language codes.
         Default is "en", which will include
         only tweets made by users having English (en) as their profile language.
-        Incoming status user\'s language must match one these languages."""
+        Incoming status user\'s language must match one these languages;
+        if you wish to capture all languages,
+        use -u '*'."""
         )
 
     parser.add_argument(
@@ -399,7 +401,14 @@ def _parse_command_line():
         help='status keywords to be tracked (optional if --locations provided.)'
         )
 
-    return parser.parse_args()
+    p = parser.parse_args()
+    # HACK: If user specifies wildcard '*' language filter in list,
+    # empty the user_lang member so we don't filter on them later.
+    # See: StreamListener.tweet_matchp()
+    if  p.user_lang and '*' in p.user_lang:
+        p.user_lang = []
+        
+    return p
 
 
 if __name__ == "__main__":
