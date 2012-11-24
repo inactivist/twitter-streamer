@@ -3,9 +3,17 @@ import streamer
 
 class Tests(unittest.TestCase):
     def test_duration_opts(self):
-        self.assertEqual(streamer.duration_type('60S'), 60)
-        self.assertEqual(streamer.duration_type('10M'), 60 * 10)
-        self.assertEqual(streamer.duration_type('10'), 10)
+        SECS_DAY = 60*60*24
+        tests = (
+            ('60S', 60),
+            ('10M', 600),
+            ('10', 10),
+            ('1d', SECS_DAY),
+            ('5D', SECS_DAY * 5)
+        )
+        for t in tests:
+            self.assertEqual(streamer.duration_type(t[0]), t[1])
+        
         
     def test_location_macros(self):
         r = streamer.lookup_location_query_macro('usa')

@@ -69,15 +69,20 @@ def duration_type(value):
     Returns # of seconds.
     """
     import re
-    value = value.strip()
-    secs = { 's': 1, 'm': 60, 'h': 3600 }
-    match = re.match("^(?P<val>\d+)(?P<code>[SsMmHh]*)", value)
-    val = int(match.group('val'))
-    code = match.group('code').lower()
-    if not code:
-        code = 's'
-    return val * secs[code]
-    
+    value = value.strip() + ' ' # pad with space which is synonymous with 'S' (seconds).
+    secs = { ' ': 1, 's': 1, 'm': 60, 'h': 3600, 'd': 86400 }
+    match = re.match("^(?P<val>\d+)(?P<code>[\ssmd]+)", value.lower())
+    if match:
+        val = int(match.group('val'))
+        code = match.group('code')
+        if not code:
+            # Default is seconds (s)
+            code = 's'
+        else:
+            code = code[0]
+        return val * secs[code]
+    else:
+        raise argparse.ArgumentTypeError('Unexpected duration type "%s".' % value.strip())
 
 def _get_version():
     from __init__ import __version__
@@ -412,13 +417,15 @@ def _parse_command_line():
         '-d',
         '--duration',
         type=duration_type,
+        metavar='duration-spec',
         help='capture duration from first message receipt.'
-        ' Use 5 or 5s for 5 seconds, 5m for 5 minutes, or 5h for 5 hours.'
+        ' Use 5 or 5s for 5 seconds, 5m for 5 minutes, 5h for 5 hours, or 5d for 5 days.'
     )
     
     parser.add_argument(
         '-m',
         '--max-tweets',
+        metavar='count',
         type=int,
         help='maximum number of statuses to capture.'
     )
