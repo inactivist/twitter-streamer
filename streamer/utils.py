@@ -54,3 +54,11 @@ def multi_getattr(obj, attr, default=None):
             else:
                 raise
     return obj
+
+def init_logger(logger, level):
+    import logging
+    FORMAT = "%(asctime)-15s %(message)s"
+    level = logging._checkLevel(level.upper())
+    logging.basicConfig(format=FORMAT)
+    logger.setLevel(level)
+
