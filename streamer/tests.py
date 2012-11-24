@@ -1,8 +1,13 @@
 import unittest
+import streamer
 
 class Tests(unittest.TestCase):
+    def test_duration_opts(self):
+        self.assertEqual(streamer.duration_type('60S'), 60)
+        self.assertEqual(streamer.duration_type('10M'), 60 * 10)
+        self.assertEqual(streamer.duration_type('10'), 10)
+        
     def test_location_macros(self):
-        import streamer
         r = streamer.lookup_location_query_macro('usa')
         self.assertIsNotNone(r)
         usa_bbox = [-124.848974,24.396308,-66.885444,49.384358]
