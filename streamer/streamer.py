@@ -1,3 +1,4 @@
+import argparse
 import sys
 import csv as csv_lib
 import logging
@@ -48,6 +49,7 @@ def csv_args(value):
     Used in command line parsing."""
     return map(str, value.split(","))
 
+
 def locations_type(value):
     """Conversion and validation for --locations= argument."""
     parsed = csv_args(value)
@@ -55,6 +57,27 @@ def locations_type(value):
         raise argparse.ArgumentTypeError('must contain a multiple of four floating-point numbers defining the locations to include.')
     print parsed
     return parsed
+
+
+def duration_type(value):
+    """
+    Parse 'duration' type argument.
+    Format: {number}{interval-code}
+    where: number is an integer
+    interval-code: one of ['h', 'm', 's'] (case-insensitive)
+    interval-code defaults to 's'
+    Returns # of seconds.
+    """
+    import re
+    value = value.strip()
+    secs = { 's': 1, 'm': 60, 'h': 3600 }
+    match = re.match("^(?P<val>\d+)(?P<code>[SsMmHh]*)", value)
+    val = int(match.group('val'))
+    code = match.group('code').lower()
+    if not code:
+        code = 's'
+    return val * secs[code]
+    
 
 def _get_version():
     from __init__ import __version__
@@ -76,7 +99,9 @@ class StreamListener(tweepy.StreamListener):
         self.opts = opts
         self.csv_writer = csv_lib.writer(sys.stdout)
         self.running = True
-
+        self.first_message_received = None
+        self.status_count = 0
+        
         # Create a list of recognizer instances, in decreasing priority order.
         self.recognizers = (
             message_recognizers.DataContainsRecognizer(
@@ -90,11 +115,14 @@ class StreamListener(tweepy.StreamListener):
             message_recognizers.DataContainsRecognizer(
                 handler_method=self.parse_warning_and_dispatch,
                 match_string='"warning":'),
+            
+            message_recognizers.DataContainsRecognizer(
+                handler_method=self.on_disconnect,
+                match_string='"disconnect":'),
 
-            #
-            # Everything else gets dumped to output...
+            # Everything else is sent to logger
             message_recognizers.MatchAnyRecognizer(
-                handler_method=self.dump_stream_data),
+                handler_method=self.on_unrecognized),
         )
 
     def dump_with_timestamp(self, text, category="Unknown"):
@@ -103,20 +131,35 @@ class StreamListener(tweepy.StreamListener):
     def dump_stream_data(self, stream_data):
         self.dump_with_timestamp(stream_data)
 
+    def on_unrecognized(self, stream_data):
+        logger.warn("Unrecognized: %s", stream_data.strip())
+
+    def on_disconnect(self, stream_data):
+        msg = json.loads(stream_data)
+        logger.warn("Disconnect: code: %d stream_name: %s reason: %s",
+                    utils.resolve_with_default(msg, 'disconnect.code', 0),
+                    utils.resolve_with_default(msg, 'disconnect.stream_name', 'n/a'),
+                    utils.resolve_with_default(msg, 'disconnect.reason', 'n/a'))
+        
     def parse_warning_and_dispatch(self, stream_data):
         try:
-            self.dump_stream_data(stream_data)
-            warning = json.loads(stream_data)['warning']
+            warning = json.loads(stream_data).get('warning')
             return self.on_warning(warning)
         except json.JSONDecodeError as e:
             logger.exception("Exception parsing: %s" % stream_data)
             return False
 
     def parse_status_and_dispatch(self, stream_data):
-        """Parse an incoming status and do something with it.
+        """
+        Process an incoming status message.
         """
         status = tweepy.models.Status.parse(self.api, json.loads(stream_data))
         if self.tweet_matchp(status):
+            self.status_count += 1
+            if self.should_stop():
+                self.running = False
+                return False
+            
             if self.opts.fields:
                 try:
                     csvrow = []
@@ -206,6 +249,13 @@ class StreamListener(tweepy.StreamListener):
         return  ## Continue streaming.
 
     def on_data(self, data):
+        if not self.first_message_received:
+            self.first_message_received = int(time.time())
+            
+        if self.should_stop():
+            self.running = False
+            return False # Exit main loop.
+
         for r in self.recognizers:
             if r.match(data):
                 if r.handle_message(data) is False:
@@ -217,6 +267,24 @@ class StreamListener(tweepy.StreamListener):
                 return
         # Don't execute any of the base class on_data() handlers. 
         return
+
+    def should_stop(self):
+        """
+        Return True if processing should stop.
+        """
+        if self.opts.duration:
+            if self.first_message_received:
+                et = int(time.time()) - self.first_message_received
+                flag = et >= self.opts.duration
+                if flag:
+                    logger.debug("Stop requested due to duration limits (et=%d, target=%d seconds).",
+                                 et,
+                                 self.opts.duration)
+                return flag
+        if self.opts.max_tweets and self.status_count > self.opts.max_tweets:
+            logger.debug("Stop requested due to count limits (%d)." % self.opts.max_tweets)
+            return True
+        return False         
 
 def location_query_to_location_filter(tweepy_auth, location_query):
     t = lookup_location_query_macro(location_query)
@@ -341,6 +409,21 @@ def _parse_command_line():
         )
 
     parser.add_argument(
+        '-d',
+        '--duration',
+        type=duration_type,
+        help='capture duration from first message receipt.'
+        ' Use 5 or 5s for 5 seconds, 5m for 5 minutes, or 5h for 5 hours.'
+    )
+    
+    parser.add_argument(
+        '-m',
+        '--max-tweets',
+        type=int,
+        help='maximum number of statuses to capture.'
+    )
+
+    parser.add_argument(
         '-l',
         '--log-level',
         default='WARN',
@@ -412,7 +495,6 @@ def _parse_command_line():
 
 
 if __name__ == "__main__":
-    import argparse
     import config
     opts = _parse_command_line()
     
