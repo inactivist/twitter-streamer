@@ -1,5 +1,6 @@
 import unittest
 import streamer
+import args
 
 class Tests(unittest.TestCase):
     def test_duration_opts(self):
@@ -12,7 +13,7 @@ class Tests(unittest.TestCase):
             ('5D', SECS_DAY * 5)
         )
         for t in tests:
-            self.assertEqual(streamer.duration_type(t[0]), t[1])
+            self.assertEqual(args.duration_type(t[0]), t[1])
         
         
     def test_location_macros(self):
