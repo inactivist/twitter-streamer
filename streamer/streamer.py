@@ -113,8 +113,9 @@ def process_tweets(config, opts):
                 streamer.filter(**kwargs)
             except TypeError as e:
                 if 'stall_warnings' in e.message:
-                    logger.warn('Installed Tweepy version does not support stall_warnings parameter.  Restarting without stall warnings.')
-                    streamer.filter(track=track)
+                    logger.warn("Installed Tweepy version doesn't support stall_warnings parameter.  Restarting without stall_warnings parameter.")
+                    del kwargs['stall_warnings']
+                    streamer.filter(**kwargs)
                 else:
                     raise
 
