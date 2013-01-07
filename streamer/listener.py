@@ -89,7 +89,7 @@ class StreamListener(tweepy.StreamListener):
                         try:
                             value = utils.resolve_with_default(status, f, None)
                         except AttributeError:
-                            if opts.terminate_on_error:
+                            if self.opts.terminate_on_error:
                                 self.logger.error("Field '%s' not found in tweet id=%s, terminating." % (f, status.id_str))
                                 # Terminate main loop.
                                 self.running = False
