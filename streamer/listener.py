@@ -7,11 +7,14 @@ import simplejson as json
 import message_recognizers
 import utils
 
+MISSING_FIELD_VALUE = ''
+
+
 class StreamListener(tweepy.StreamListener):
     """
     Tweepy StreamListener that dumps tweets to stdout.
     """
-    
+
     def __init__(self, opts, logger, api=None):
         super(StreamListener, self).__init__(api=api)
         self.opts = opts
@@ -20,7 +23,7 @@ class StreamListener(tweepy.StreamListener):
         self.first_message_received = None
         self.status_count = 0
         self.logger = logger
-        
+
         # Create a list of recognizer instances, in decreasing priority order.
         self.recognizers = (
             message_recognizers.DataContainsRecognizer(
@@ -34,7 +37,7 @@ class StreamListener(tweepy.StreamListener):
             message_recognizers.DataContainsRecognizer(
                 handler_method=self.parse_warning_and_dispatch,
                 match_string='"warning":'),
-            
+
             message_recognizers.DataContainsRecognizer(
                 handler_method=self.on_disconnect,
                 match_string='"disconnect":'),
@@ -59,12 +62,12 @@ class StreamListener(tweepy.StreamListener):
                     utils.resolve_with_default(msg, 'disconnect.code', 0),
                     utils.resolve_with_default(msg, 'disconnect.stream_name', 'n/a'),
                     utils.resolve_with_default(msg, 'disconnect.reason', 'n/a'))
-        
+
     def parse_warning_and_dispatch(self, stream_data):
         try:
             warning = json.loads(stream_data).get('warning')
             return self.on_warning(warning)
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             self.logger.exception("Exception parsing: %s" % stream_data)
             return False
 
@@ -78,7 +81,7 @@ class StreamListener(tweepy.StreamListener):
             if self.should_stop():
                 self.running = False
                 return False
-            
+
             if self.opts.fields:
                 try:
                     csvrow = []
@@ -95,8 +98,8 @@ class StreamListener(tweepy.StreamListener):
                             else:
                                 value = MISSING_FIELD_VALUE
                         # Try to encode the value as UTF-8, since Twitter says
-                        # that's how it's encoded. 
-                        # If it's not a string value, we eat the exception, 
+                        # that's how it's encoded.
+                        # If it's not a string value, we eat the exception,
                         # as value is already set.
                         # See: tweepy.utils.convert_to_utf8_str() for example conversion.
                         try:
@@ -113,7 +116,7 @@ class StreamListener(tweepy.StreamListener):
                 print stream_data.strip()
 
         # Parse stream_data, compare tweet timestamp to current time as GMT;
-        # This bit does consume some time, so let's not do it unless absolutely 
+        # This bit does consume some time, so let's not do it unless absolutely
         # necessary.
         if self.opts.report_lag:
             now = datetime.datetime.utcnow()
@@ -170,7 +173,7 @@ class StreamListener(tweepy.StreamListener):
     def on_data(self, data):
         if not self.first_message_received:
             self.first_message_received = int(time.time())
-            
+
         if self.should_stop():
             self.running = False
             return False # Exit main loop.
@@ -184,7 +187,7 @@ class StreamListener(tweepy.StreamListener):
                 # Don't execute any other recognizers, and don't call base
                 # on_data() because we've already handled the message.
                 return
-        # Don't execute any of the base class on_data() handlers. 
+        # Don't execute any of the base class on_data() handlers.
         return
 
     def should_stop(self):
@@ -203,4 +206,4 @@ class StreamListener(tweepy.StreamListener):
         if self.opts.max_tweets and self.status_count > self.opts.max_tweets:
             self.logger.debug("Stop requested due to count limits (%d)." % self.opts.max_tweets)
             return True
-        return False         
+        return False

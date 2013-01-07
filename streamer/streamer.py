@@ -12,7 +12,6 @@ from listener import StreamListener
 logger = logging.getLogger(__name__)
 
 RETRY_LIMIT = 10
-MISSING_FIELD_VALUE = ''
 
 """
     List of named location query (--location-query) names and their
@@ -69,7 +68,7 @@ def location_query_to_location_filter(tweepy_auth, location_query):
                 return t
             else:
                 raise ValueError("Place '%s' does not have a bounding box." % place.full_name)
-            
+
     # Nothing found, try for matching macro
     raise ValueError("'%s': No such place." % location_query)
 
@@ -140,8 +139,8 @@ def process_tweets(config, opts):
 if __name__ == "__main__":
     import config
     opts = args.parse_command_line(get_version())
-    
-    # TODO: Fix this - 
+
+    # TODO: Fix this -
     if opts.location_query is None and opts.locations is None:
         if not opts.track:
             sys.stderr.write('%s: error: Must provide list of track keywords if --location or --location-query is not provided.\n' % __file__)
