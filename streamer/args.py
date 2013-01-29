@@ -7,6 +7,16 @@ def csv_args(value):
     return map(str, value.split(","))
 
 
+def csv_ints(value):
+    """ Parse a CSV string into an array of ints. """
+    return map(int, value.split(","))
+
+
+def userids_type(value):
+    """ Alias for csv_ints.  Parse list of userids into array of ints. """
+    return csv_ints(value)
+
+
 def locations_type(value):
     """Conversion and validation for --locations= argument."""
     parsed = csv_args(value)
@@ -28,7 +38,7 @@ def duration_type(value):
     import re
     value = value.strip() + ' ' # pad with space which is synonymous with 'S' (seconds).
     secs = { ' ': 1, 's': 1, 'm': 60, 'h': 3600, 'd': 86400 }
-    match = re.match("^(?P<val>\d+)(?P<code>[\ssmd]+)", value.lower())
+    match = re.match("^(?P<val>\d+)(?P<code>[\ssmhd]+)", value.lower())
     if match:
         val = int(match.group('val'))
         code = match.group('code')
@@ -53,6 +63,13 @@ def parse_command_line(version):
         help='list of fields to output as CSV columns.  If not set, raw status text (all fields) as a large JSON structure.')
 
     parser.add_argument(
+        '-F',
+        '--follow',
+        type=userids_type,
+        metavar='follow-userid-list',
+        help='comma-separated list of Twitter userids (numbers, not names) to follow.'),
+
+    parser.add_argument(
         '--locations',
         type=locations_type,
         metavar='bounding-box-coordinates',
@@ -75,7 +92,7 @@ def parse_command_line(version):
         metavar='config-file-name',
         default='default.ini',
         help='use configuration settings from the file given in this option.'
-        
+
         )
 
     parser.add_argument(
@@ -86,7 +103,7 @@ def parse_command_line(version):
         help='capture duration from first message receipt.'
         ' Use 5 or 5s for 5 seconds, 5m for 5 minutes, 5h for 5 hours, or 5d for 5 days.'
     )
-    
+
     parser.add_argument(
         '-m',
         '--max-tweets',
@@ -162,5 +179,5 @@ def parse_command_line(version):
     # See: StreamListener.tweet_matchp()
     if  p.user_lang and '*' in p.user_lang:
         p.user_lang = []
-        
+
     return p

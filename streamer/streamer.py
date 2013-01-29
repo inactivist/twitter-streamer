@@ -83,6 +83,8 @@ def make_filter_args(opts, tweepy_auth):
         kwargs['locations'] = map(float, opts.locations)
     if opts.location_query:
         kwargs['locations'] = location_query_to_location_filter(tweepy_auth, opts.location_query)
+    if opts.follow:
+        kwargs['follow'] = opts.follow
     return kwargs
 
 
@@ -141,7 +143,9 @@ if __name__ == "__main__":
     opts = args.parse_command_line(get_version())
 
     # TODO: Fix this -
-    if opts.location_query is None and opts.locations is None:
+    if (opts.location_query is None and
+        opts.locations is None and
+        opts.follow is None):
         if not opts.track:
             sys.stderr.write('%s: error: Must provide list of track keywords if --location or --location-query is not provided.\n' % __file__)
             sys.exit()
