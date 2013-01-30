@@ -5,8 +5,12 @@ has some limitations, in that you can't filter on a very small
 region.
 """
 import sys
+import logging
 import simplejson as json
 import argparse
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 def get_coords(t):
     """ Get best coordinates for a tweet.
@@ -23,12 +27,12 @@ def get_coords(t):
             c = c['coordinates']
         return c
     except KeyError:
-        bbox = t['place']['bounding_box']['coordinates'][0][0]
-        print bbox
-        raise
-    except KeyError:
-        print "None"
-        raise
+        try:
+            bbox = t['place']['bounding_box']['coordinates'][0][0]
+            return bbox
+        except KeyError:
+            pass
+    return None
 
 
 def point_in_bbox(point, bbox):
@@ -43,19 +47,35 @@ def point_in_bbox(point, bbox):
         point[1] >= bbox[1] and point[1] <= bbox[3]
 
 
-# Get bounding box (minlon, minlat, maxlon, maxlat)
-bbox = sys.argv[1].split(',')
-assert len(bbox) == 4
+def four_floats(vals):
+    bbox = [float(x) for x in vals.split()]
+    if len(bbox) != 4:
+        raise argparse.ArgumentTypeError('Bounding box must contain exactly four floating-point values.')
+    if bbox[0] > bbox[2] or bbox[1] > bbox[3]:
+        raise argparse.ArgumentTypeError('Bounding box must be in the form of minlon minlat maxlon maxlat.')
+    return bbox
+
+parser = argparse.ArgumentParser()
+parser.add_argument('bbox',
+    metavar='bounding-box',
+    type=four_floats)
+
+opts = parser.parse_args()
+
+# Get bounding box coordinates (minlon, minlat, maxlon, maxlat)
+
+def output(opts, line, json_obj):
+    print line
 
 for line in sys.stdin:
     try:
         line = line.strip()
         t = json.loads(line)
         loc = get_coords(t)
-        if loc and point_in_bbox(loc, bbox):
-            #print t['id_str'], loc, bbox #line
-            print line
-
-    except json.JSONDecodeError as e:
-        sys.stderr.write("Error: %s parsing line %s\n" % (e, line))
-        pass
+        if loc:
+            id_str = t['id_str']
+            inside = point_in_bbox(loc, opts.bbox)
+            if inside:
+                output(opts, line, t)
+    except Exception:
+        logger.exception("Error parsing line %s" % line)
