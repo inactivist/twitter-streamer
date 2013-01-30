@@ -42,12 +42,10 @@ def point_in_bbox(point, bbox):
     return point[0] >= bbox[0] and point[0] <= bbox[2] and \
         point[1] >= bbox[1] and point[1] <= bbox[3]
 
-# Las Vegas Convention Center
-# SW, NE
-# Tight
-bbox = (-115.15466, 36.12793, -115.14672, 36.13363)
-#
-# loose: bbox = (-115.15444,36.12794,-115.14648,36.13739)
+
+# Get bounding box (minlon, minlat, maxlon, maxlat)
+bbox = sys.argv[1].split(',')
+assert len(bbox) == 4
 
 for line in sys.stdin:
     try:
