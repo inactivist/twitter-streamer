@@ -59,13 +59,24 @@ parser = argparse.ArgumentParser()
 parser.add_argument('bbox',
     metavar='bounding-box',
     type=four_floats)
-
 opts = parser.parse_args()
 
-# Get bounding box coordinates (minlon, minlat, maxlon, maxlat)
+
+def getval(d, nested_key, default=None):
+    """ Simple way to get a deep value from a nested dict. """
+    keys = nested_key.split('.')
+    o = d
+    for k in keys:
+        o = o.get(k)
+        if k == keys[-1]:
+            return o
+        elif not isinstance(o, dict):
+            break
+    return default
+
 
 def output(opts, line, json_obj):
-    print line
+    print "%s: %s" % (json_obj['id_str'], [getval(json_obj, k) for k in ['user.screen_name', 'text']])
 
 for line in sys.stdin:
     try:
