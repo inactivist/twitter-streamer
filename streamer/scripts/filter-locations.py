@@ -66,27 +66,32 @@ def getval(d, nested_key, default=None):
     """ Simple way to get a deep value from a nested dict. """
     keys = nested_key.split('.')
     o = d
-    for k in keys:
+    l = len(keys)
+    for i, k in enumerate(keys):
         o = o.get(k)
-        if k == keys[-1]:
+        if i == l-1:
             return o
         elif not isinstance(o, dict):
             break
     return default
 
 
-def output(opts, line, json_obj):
-    print "%s: %s" % (json_obj['id_str'], [getval(json_obj, k) for k in ['user.screen_name', 'text']])
+def output(opts, line, json_obj, fields):
+    print "%s: %s" % (json_obj['id_str'], [getval(json_obj, k) for k in fields])
 
-for line in sys.stdin:
-    try:
-        line = line.strip()
-        t = json.loads(line)
-        loc = get_coords(t)
-        if loc:
-            id_str = t['id_str']
-            inside = point_in_bbox(loc, opts.bbox)
-            if inside:
-                output(opts, line, t)
-    except Exception:
-        logger.exception("Error parsing line %s" % line)
+
+if __name__ == '__main__':
+    fields = ['user.screen_name', 'geo.coordinates', 'coordinates.coordinates', 'text']
+
+    for line in sys.stdin:
+        try:
+            line = line.strip()
+            t = json.loads(line)
+            loc = get_coords(t)
+            if loc:
+                id_str = t['id_str']
+                inside = point_in_bbox(loc, opts.bbox)
+                if inside:
+                    output(opts, line, t, fields)
+        except Exception:
+            logger.exception("Error parsing line %s" % line)
