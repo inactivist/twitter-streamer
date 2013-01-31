@@ -19,6 +19,9 @@ def get_coords(t):
           1. coordinates.coordinates [long, lat]
           2. place.bounding_box.coordinates[0][0]
 
+          TODO: geo field is also used sometimes:
+          See https://groups.google.com/forum/?fromgroups=#!topic/twitter-development-talk/nk6nUXgXSQg
+
     """
     try:
         # [long, lat]
@@ -86,7 +89,12 @@ if __name__ == '__main__':
     for line in sys.stdin:
         try:
             line = line.strip()
-            t = json.loads(line)
+            try:
+                t = json.loads(line)
+            except json.JSONDecodeError:
+                logger.warn('Decode error (data: %s...)', line[:60])
+                continue
+
             loc = get_coords(t)
             if loc:
                 id_str = t['id_str']
