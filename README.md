@@ -50,15 +50,15 @@ URL encoding.
 ## Examples ##
 Stream (filter) statuses containing both *car* **and** *dog*:
 
-    python streamer.py "car dog"
+    $ python streamer.py "car dog"
 
 Stream statuses containing either *boat* **or** *bike*:
 
-    python streamer.py "boat,bike"
+    $ python streamer.py "boat,bike"
 
 Stream statuses containing (*water* **and** *drink*) *or* (*eat* **and** *lunch*):
 
-    python streamer.py "water drink" "eat lunch"
+    $ python streamer.py "water drink" "eat lunch"
 
 ## Output Format ##
 The default output mode dumps the unprocessed stream's JSON string for each received
@@ -73,6 +73,21 @@ element as an independent JSON object rather than treat the stream as a JSON arr
 The program will produce CSV output when using `--fields` (`-f`) field specifiers.
 See [*Field Output Selectors*](#field-output-selectors), below.
 ## Experimental Features ##
+### Following users ###
+As of v0.0.6-dev, you can follow user ids by using the `--follow` (`-F`) option.
+The `--follow` option accepts a list of comma-separated integer user id values.
+
+I plan to add user `screen_name` lookup at some point, in the meantime,
+you can use the helper script `scripts/lookup-users.py`:
+
+    $ python scripts/lookup-users.py twitter,tweepy
+    tweepy: 14452478
+    twitter: 783214
+
+(Please keep in mind that per the Streaming API docs, following users does not
+filter results to only those users, rather, it adds the selected users' streams
+to the incoming stream results.)
+
 ### Location-based searching ###
 As of v0.0.4, you can add location-based search criteria by specifying the `--locations`
 option.  The value is a comma-separated list of longitude, latitude pairs that
