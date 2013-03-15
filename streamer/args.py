@@ -87,15 +87,6 @@ def parse_command_line(version):
         )
 
     parser.add_argument(
-        '-c',
-        '--config-file',
-        metavar='config-file-name',
-        default='default.ini',
-        help='use configuration settings from the file given in this option.'
-
-        )
-
-    parser.add_argument(
         '-d',
         '--duration',
         type=duration_type,

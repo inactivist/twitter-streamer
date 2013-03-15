@@ -1,3 +1,4 @@
+import os
 import sys
 import logging
 import time
@@ -88,11 +89,10 @@ def make_filter_args(opts, tweepy_auth):
     return kwargs
 
 
-def process_tweets(config, opts):
+def process_tweets(opts):
     """Set up and process incoming streams."""
-    cfg = config.as_dict().get('twitter_api')
-    auth = tweepy.OAuthHandler(cfg.get('consumer_key'), cfg.get('consumer_secret'))
-    auth.set_access_token(cfg.get('access_token_key'), cfg.get('access_token_secret'))
+    auth = tweepy.OAuthHandler(os.environ['CONSUMER_KEY'], os.environ['CONSUMER_SECRET'])
+    auth.set_access_token(os.environ['ACCESS_KEY'], os.environ['ACCESS_SECRET'])
 
     logger.debug('Init tweepy.Stream()')
     logger.debug(opts)
@@ -149,7 +149,5 @@ if __name__ == "__main__":
         if not opts.track:
             sys.stderr.write('%s: error: Must provide list of track keywords if --location or --location-query is not provided.\n' % __file__)
             sys.exit()
-    conf = config.DictConfigParser()
-    conf.read(opts.config_file)
     utils.init_logger(logger, opts.log_level)
-    process_tweets(conf, opts)
+    process_tweets(opts)
