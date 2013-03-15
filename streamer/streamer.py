@@ -91,8 +91,12 @@ def make_filter_args(opts, tweepy_auth):
 
 def process_tweets(opts):
     """Set up and process incoming streams."""
-    auth = tweepy.OAuthHandler(os.environ['CONSUMER_KEY'], os.environ['CONSUMER_SECRET'])
-    auth.set_access_token(os.environ['ACCESS_KEY'], os.environ['ACCESS_SECRET'])
+    try:
+        auth = tweepy.OAuthHandler(os.environ['CONSUMER_KEY'], os.environ['CONSUMER_SECRET'])
+        auth.set_access_token(os.environ['ACCESS_KEY'], os.environ['ACCESS_SECRET'])
+    except KeyError as e:
+        logger.error('You must set the %s API key environment variable.', e)
+        return
 
     logger.debug('Init tweepy.Stream()')
     logger.debug(opts)
