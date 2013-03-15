@@ -40,8 +40,8 @@ def multi_getattr(obj, attr, default=None):
     it, an exception is raised when a missing attribute is encountered.
 
     From http://code.activestate.com/recipes/577346-getattr-with-arbitrary-depth/
-    
-    Deprecated, does not work with dictionaries.  Use resolve_with_default() 
+
+    Deprecated, does not work with dictionaries.  Use resolve_with_default()
     instead.
     """
     attributes = attr.split(".")
@@ -58,7 +58,6 @@ def multi_getattr(obj, attr, default=None):
 def init_logger(logger, level):
     import logging
     FORMAT = "%(asctime)-15s %(message)s"
-    level = logging._checkLevel(level.upper())
     logging.basicConfig(format=FORMAT)
     logger.setLevel(level)
 
