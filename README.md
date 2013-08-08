@@ -97,7 +97,7 @@ in fact Tweepy enforces this for us.)
 
 Example:
 
-    $ python streamer.py --f=place.full_name,coordinates.coordinates,text --locations="-122.75,36.8,-121.75,37.8"
+    $ python streamer.py -f=place.full_name,coordinates.coordinates,text --locations="-122.75,36.8,-121.75,37.8"
 
 This produces a stream of status updates as CSV, with the `place.full_name`,
 `coordinates.coordinates`, and `text` fields (if available).  Here is
