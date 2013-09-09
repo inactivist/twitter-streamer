@@ -22,7 +22,6 @@ def locations_type(value):
     parsed = csv_args(value)
     if len(parsed) % 4 != 0:
         raise argparse.ArgumentTypeError('must contain a multiple of four floating-point numbers defining the locations to include.')
-    print parsed
     return parsed
 
 
