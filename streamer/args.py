@@ -13,8 +13,8 @@ def csv_ints(value):
 
 
 def userids_type(value):
-    """ Alias for csv_ints.  Parse list of userids into array of ints. """
-    return csv_ints(value)
+    """ Alias for csv_args.  Parse list of userids into array of strings. """
+    return csv_args(value)
 
 
 def locations_type(value):
