@@ -58,6 +58,5 @@ def multi_getattr(obj, attr, default=None):
 def init_logger(logger, level):
     import logging
     FORMAT = "%(asctime)-15s %(message)s"
-    logging.basicConfig(format=FORMAT)
-    logger.setLevel(level)
+    logging.basicConfig(format=FORMAT, level=level)
 
