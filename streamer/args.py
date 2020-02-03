@@ -1,5 +1,6 @@
 import argparse
 
+
 def csv_args(value):
     """Parse a CSV string into a Python list of strings.
 
@@ -21,7 +22,8 @@ def locations_type(value):
     """Conversion and validation for --locations= argument."""
     parsed = csv_args(value)
     if len(parsed) % 4 != 0:
-        raise argparse.ArgumentTypeError('must contain a multiple of four floating-point numbers defining the locations to include.')
+        raise argparse.ArgumentTypeError(
+            'must contain a multiple of four floating-point numbers defining the locations to include.')
     return parsed
 
 
@@ -35,8 +37,9 @@ def duration_type(value):
     Returns # of seconds.
     """
     import re
-    value = value.strip() + ' ' # pad with space which is synonymous with 'S' (seconds).
-    secs = { ' ': 1, 's': 1, 'm': 60, 'h': 3600, 'd': 86400 }
+    # pad with space which is synonymous with 'S' (seconds).
+    value = value.strip() + ' '
+    secs = {' ': 1, 's': 1, 'm': 60, 'h': 3600, 'd': 86400}
     match = re.match("^(?P<val>\d+)(?P<code>[\ssmhd]+)", value.lower())
     if match:
         val = int(match.group('val'))
@@ -48,11 +51,13 @@ def duration_type(value):
             code = code[0]
         return val * secs[code]
     else:
-        raise argparse.ArgumentTypeError('Unexpected duration type "%s".' % value.strip())
+        raise argparse.ArgumentTypeError(
+            'Unexpected duration type "%s".' % value.strip())
 
 
 def parse_command_line(version):
-    parser = argparse.ArgumentParser(description='Twitter Stream dumper v%s' % version)
+    parser = argparse.ArgumentParser(
+        description='Twitter Stream dumper v%s' % version)
 
     parser.add_argument(
         '-f',
@@ -83,7 +88,7 @@ def parse_command_line(version):
         help=r"""query Twitter's geo/search API to find an exact match for provided
          name, which is then converted to a locations bounding box and used as
          the --location parameter."""
-        )
+    )
 
     parser.add_argument(
         '-d',
@@ -108,7 +113,7 @@ def parse_command_line(version):
         default='WARN',
         metavar='log-level',
         help="set log level to one recognized by core logging module.  Default is WARN."
-        )
+    )
 
 #    parser.add_argument(
 #        '-v',
@@ -123,28 +128,25 @@ def parse_command_line(version):
         type=int,
         metavar='seconds',
         help='Report time difference between local system and Twitter stream server time exceeding this number of seconds.'
-        )
+    )
 
     parser.add_argument(
         '-u',
-        '--user-lang',
+        '--tweet-lang',
         type=csv_args,
-        default='en',
+        default=None,
         metavar='language-code',
         help="""BCP-47 language filter(s).  A comma-separate list of language codes.
-        Default is "en", which will include
-        only tweets made by users having English (en) as their profile language.
-        Incoming status user\'s language must match one these languages;
-        if you wish to capture all languages,
-        use -u '*'."""
-        )
+        Default is None, which will include all tweets.
+        """
+    )
 
     parser.add_argument(
         '-n',
         '--no-retweets',
         action='store_true',
         help='don\'t include statuses identified as retweets.'
-        )
+    )
 
     parser.add_argument(
         '-t',
@@ -161,13 +163,13 @@ def parse_command_line(version):
         'track',
         nargs='*',
         help='status keywords to be tracked (optional if --locations provided.)'
-        )
+    )
 
     p = parser.parse_args()
     # HACK: If user specifies wildcard '*' language filter in list,
-    # empty the user_lang member so we don't filter on them later.
+    # empty the tweet_lang member so we don't filter on them later.
     # See: StreamListener.tweet_matchp()
-    if  p.user_lang and '*' in p.user_lang:
-        p.user_lang = []
+    if p.tweet_lang and '*' in p.tweet_lang:
+        p.tweet_lang = []
 
     return p
