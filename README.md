@@ -92,7 +92,7 @@ to the incoming stream results.)
 As of v0.0.4, you can add location-based search criteria by specifying the `--locations`
 option.  The value is a comma-separated list of longitude, latitude pairs that
 define one or more bounding boxes to include in the stream.  (This implies that
-the number of comma-separated `--location=` values must be a multiple of 4, and
+the number of comma-separated `--locations=` values must be a multiple of 4, and
 in fact Tweepy enforces this for us.)
 
 Example:

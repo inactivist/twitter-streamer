@@ -9,7 +9,7 @@ import utils
 
 import args
 from listener import StreamListener
-
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 RETRY_LIMIT = 10
@@ -120,7 +120,7 @@ def process_tweets(opts):
     while listener.running:
         try:
             try:
-                logger.debug('streamer.filter(%s)' % kwargs)
+                logger.debug('streamer.filter(%s)', kwargs)
                 streamer.filter(**kwargs)
             except TypeError as e:
                 if 'stall_warnings' in e.message:
@@ -160,4 +160,5 @@ if __name__ == "__main__":
             sys.stderr.write('%s: error: Must provide list of track keywords if --location or --location-query is not provided.\n' % __file__)
             sys.exit()
     utils.init_logger(logger, opts.log_level)
+    logger.debug('opts=%s', opts.__dict__)
     process_tweets(opts)
