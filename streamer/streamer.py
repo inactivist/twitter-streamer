@@ -138,6 +138,7 @@ def process_tweets(opts):
                 listener.running = False
             logger.exception('Caught IOError')
         except KeyboardInterrupt:
+            logger.warning("KeyboardInterrupt")
             # Stop the listener loop.
             listener.running = False
         except Exception:
