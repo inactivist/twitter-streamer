@@ -1,4 +1,5 @@
 # Twitter Streamer #
+
 *Twitter Streamer* is a Python command-line utility to dump [Twitter streaming API][streaming-apis]
 [statuses/filter][statuses-filter] method data to stdout.
 
@@ -6,7 +7,15 @@ It began life as a testing tool for [Tweepy][tweepy], and to satisfy my curiosit
 It's currently in an early beta test state, and needs testing and improvement.
 (see [Known issues](#known-issues), below)
 
+## PROJECT STATUS ##
+
+**NOTE:** This project is not currently ported to Python 3, and is otherwise
+woefully out of date.  It is not under active development, though there are
+several improvements I plan on pushing to this repo.  Please check the issues
+list if you have any questions or concerns.
+
 ## Prerequisites ##
+
 You will need:
 
  1. Python 2.7, [Tweepy][tweepy] and its prerequisites.
@@ -31,6 +40,7 @@ If you try to use invalid API keys, you'll see something like this output:
     ...
 
 ## Usage ##
+
 Basic usage:
 
     python streamer.py [options] "track terms" ...
@@ -48,6 +58,7 @@ usage examples.  See [this question][twitter-track-hashtags] for help filtering 
 URL encoding.
 
 ## Examples ##
+
 Stream (filter) statuses containing both *car* **and** *dog*:
 
     $ python streamer.py "car dog"
@@ -61,6 +72,7 @@ Stream statuses containing (*water* **and** *drink*) *or* (*eat* **and** *lunch*
     $ python streamer.py "water drink" "eat lunch"
 
 ## Output Format ##
+
 The default output mode dumps the unprocessed stream's JSON string for each received
 element, followed by a newline.
 
@@ -72,8 +84,11 @@ element as an independent JSON object rather than treat the stream as a JSON arr
 
 The program will produce CSV output when using `--fields` (`-f`) field specifiers.
 See [*Field Output Selectors*](#field-output-selectors), below.
+
 ## Experimental Features ##
+
 ### Following users ###
+
 As of v0.0.6-dev, you can follow user ids by using the `--follow` (`-F`) option.
 The `--follow` option accepts a list of comma-separated integer user id values.
 
@@ -89,6 +104,7 @@ filter results to only those users, rather, it adds the selected users' streams
 to the incoming stream results.)
 
 ### Location-based searching ###
+
 As of v0.0.4, you can add location-based search criteria by specifying the `--locations`
 option.  The value is a comma-separated list of longitude, latitude pairs that
 define one or more bounding boxes to include in the stream.  (This implies that
@@ -125,6 +141,7 @@ about location-based information, and the [location][parameters-location] for mo
 about the `location` parameter.
 
 #### Location Query ####
+
 Recent development versions (0.0.5-dev and higher) support a new option:
 `--location-query`.  It allows you to reference a Twitter Place name, and
 automatically use the resulting coordinates as the value of the `--location`
@@ -156,6 +173,7 @@ pattern shown above.  If in doubt, enable full debug logging, by passing
 `-l DEBUG` on the command line.
 
 #### Location Issues ####
+
 * Note that there are [open issues](https://dev.twitter.com/issues/295) regarding
 the accuracy of Twitter's `locations` filtering.  You may need to do your own
 post-filtering of the results to ensure they are within the desired bounding
@@ -165,6 +183,7 @@ doesn't return a bounding box for the United States][lookup-usa].  It does for
 [Canada][lookup-canada].  Go figure.
 
 ### Field Output Selectors ###
+
 The `-f` (or `--fields`) parameter allows a comma-separated list of output fields.
 The field values will be emitted in the order listed in the given `-f`
 parameter value.  Output will be formatted as CSV records.
@@ -196,8 +215,11 @@ Example Results:
     User name 2,I actually like both cats and dogs but I've been an introvert for about 27 years now.
 
 ## To be done ##
+
 See TODO.md
+
 ## Known issues ##
+
 * Needs a bit of cleanup -- obsolete code remains from prior project and will
 be refactored or removed.
 * Error handling needs work.
@@ -213,8 +235,8 @@ time settings are correct.  [Auth can fail if your clock is out of sync][twitter
 Twitter's servers.  The `scripts/twitter-time-compare.sh` script shows
 Twitter's server and the local server times for comparison.
 
+## License ##
 
-##License##
 (MIT License) - Copyright (c) 2012-2013 Exodus Development, Inc. except where
 otherwise noted.  Please refer to LICENSE.md for the gory details.
 
