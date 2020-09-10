@@ -39,9 +39,9 @@ If you try to use invalid API keys, you'll see something like this output:
     StreamListener.on_error: 401
     ...
 
-## Usage ##
+## Basic Usage ##
 
-Basic usage:
+Activate the appropriate virtual environment as necessary, then:
 
     python streamer.py [options] "track terms" ...
 
@@ -61,15 +61,15 @@ URL encoding.
 
 Stream (filter) statuses containing both *car* **and** *dog*:
 
-    $ python streamer.py "car dog"
+    python streamer.py "car dog"
 
 Stream statuses containing either *boat* **or** *bike*:
 
-    $ python streamer.py "boat,bike"
+    python streamer.py "boat,bike"
 
 Stream statuses containing (*water* **and** *drink*) *or* (*eat* **and** *lunch*):
 
-    $ python streamer.py "water drink" "eat lunch"
+    python streamer.py "water drink" "eat lunch"
 
 ## Output Format ##
 
@@ -84,6 +84,12 @@ element as an independent JSON object rather than treat the stream as a JSON arr
 
 The program will produce CSV output when using `--fields` (`-f`) field specifiers.
 See [*Field Output Selectors*](#field-output-selectors), below.
+
+## Duration Limits (`--duration` argument) ##
+
+You can set a run duration in seconds, minutes, hours, or days using the
+`--duration=` option.  Use a reasonable integer value followed by s, m, h, or
+d for seconds, minutes, hours, or days, respectively.
 
 ## Experimental Features ##
 
@@ -113,7 +119,7 @@ in fact Tweepy enforces this for us.)
 
 Example:
 
-    $ python streamer.py -f=place.full_name,coordinates.coordinates,text --locations="-122.75,36.8,-121.75,37.8"
+    python streamer.py -f=place.full_name,coordinates.coordinates,text --locations="-122.75,36.8,-121.75,37.8"
 
 This produces a stream of status updates as CSV, with the `place.full_name`,
 `coordinates.coordinates`, and `text` fields (if available).  Here is
@@ -216,7 +222,7 @@ Example Results:
 
 ## To be done ##
 
-See TODO.md
+See [TODO.md](TODO.md)
 
 ## Known issues ##
 
