@@ -7,3 +7,4 @@ streamer/test_data/*
 streamer/.coverage
 streamer/.coveragerc
 streamer/htmlcov/*
+*.ipynb
