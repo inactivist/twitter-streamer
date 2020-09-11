@@ -220,6 +220,53 @@ Example Results:
     User name 1,Cats and dogs in Mexico. http://t.co/gYJvhdvv
     User name 2,I actually like both cats and dogs but I've been an introvert for about 27 years now.
 
+## Docker Container
+
+I've included a Dockerfile, in case you're interested in running twitter-streamer in a container.
+
+### Build Docker image
+
+    $ docker build -t twitter-streamer .
+    [ build output elided ]
+
+### Using the Docker image
+
+In order to run the script in a container, you must provide the required
+Twitter API credentials via environment variables, as described above.
+
+Assuming you have a valid .env file containing the required environment variables:
+
+    $ docker run --env-file=$PATH_TO_DOTENV_FILE -it --rm --name twitter-streamer twitter-streamer [options] $QUERY_TERMS
+    [ output here ]
+
+where `options` is one or more options allowed by twitter-streamer, and
+`$QUERY_TERMS` is the streaming query to execute.
+
+_Example - Stream 5 tweets containing the word 'python'_
+
+    $ docker run --env-file=.env -it --rm --name twitter-streamer twitter-streamer -m 5 -f=id,user.screen_name,text "python"
+    1304526577720594433,AltBot4,"RT @iphonegalaxymd: Windows 10
+
+    #pycoders #machinelearning #python #programmer #programmerslife💻 #programming #programminglife #programmerr…"
+    1304526591201103873,CodeGnuts,"RT @iphonegalaxymd: Windows 10
+
+    #pycoders #machinelearning #python #programmer #programmerslife💻 #programming #programminglife #programmerr…"
+    1304526591842635776,techtrendingnow,"RT @iphonegalaxymd: Windows 10
+
+    #pycoders #machinelearning #python #programmer #programmerslife💻 #programming #programminglife #programmerr…"
+    1304526623962812417,BotRaj1,"RT @byLilyV: #FEATURED #COURSES
+
+    #Machine #Learning A-Z™: Hands-On #Python &amp; #R In #Data #Science
+
+    Learn to create Machine Learning Algorit…"
+    1304526634393964545,DEVListings,"📋 New DEV Listing!
+
+    Category: collabs
+
+    Contributers on Basic ML Web using Django/Python
+
+    Posted by @CodePerfectPlus… https://t.co/qx2S7fp2Aw"
+
 ## To be done ##
 
 See [TODO.md](TODO.md)
