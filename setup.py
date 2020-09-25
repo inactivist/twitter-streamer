@@ -48,4 +48,5 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     zip_safe=True,
+    entry_points={"console_scripts": ["twitter-streamer=streamer.streamer:main"]},
 )

@@ -7,9 +7,7 @@ import time
 
 import tweepy
 
-from . import args
-from . import location
-from . import utils
+from . import args, location, utils
 from .listener import StreamListener
 
 logging.basicConfig()
@@ -109,7 +107,7 @@ def process_tweets(opts):
             time.sleep(5)
 
 
-if __name__ == "__main__":
+def main():
     opts = args.parse_command_line(get_version())
 
     # TODO: Fix this -
@@ -123,3 +121,7 @@ if __name__ == "__main__":
     utils.init_logger(logger, opts.log_level)
     logger.debug("opts=%s", opts.__dict__)
     process_tweets(opts)
+
+
+if __name__ == "__main__":
+    main()
