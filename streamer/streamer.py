@@ -7,10 +7,10 @@ import time
 
 import tweepy
 
-import args
-import location
-import utils
-from listener import StreamListener
+from . import args
+from . import location
+from . import utils
+from .listener import StreamListener
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ RETRY_LIMIT = 10
 
 
 def get_version():
-    from __init__ import __version__
+    from .__init__ import __version__
 
     return __version__
 
@@ -31,7 +31,7 @@ def make_filter_args(opts, tweepy_auth):
     if opts.stall_warnings:
         kwargs["stall_warnings"] = True
     if opts.locations:
-        kwargs["locations"] = map(float, opts.locations)
+        kwargs["locations"] = list(map(float, opts.locations))
     if opts.location_query:
         kwargs["locations"] = location.location_query_to_location_filter(
             tweepy_auth, opts.location_query

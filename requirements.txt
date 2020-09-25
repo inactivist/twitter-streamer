@@ -1,2 +1,2 @@
 simplejson
-tweepy==2.3.0
+tweepy==3.9

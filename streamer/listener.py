@@ -4,8 +4,8 @@ import csv as csv_lib
 import tweepy
 import simplejson as json
 
-import message_recognizers
-import utils
+from . import message_recognizers
+from . import utils
 
 MISSING_FIELD_VALUE = ''
 
@@ -48,7 +48,7 @@ class StreamListener(tweepy.StreamListener):
         )
 
     def dump_with_timestamp(self, text, category="Unknown"):
-        print "(%s)--%s--%s" % (category, datetime.datetime.now(), text)
+        print("(%s)--%s--%s" % (category, datetime.datetime.now(), text))
 
     def dump_stream_data(self, stream_data):
         self.dump_with_timestamp(stream_data)
@@ -115,7 +115,7 @@ class StreamListener(tweepy.StreamListener):
                     pass
             else:
                 # Raw JSON stream data output:
-                print stream_data.strip()
+                print(stream_data.strip())
 
         # Parse stream_data, compare tweet timestamp to current time as GMT;
         # This bit does consume some time, so let's not do it unless absolutely

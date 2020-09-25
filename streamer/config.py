@@ -1,15 +1,15 @@
 """Config utilities and variables.
 """
-import ConfigParser
+import configparser
 
 
-class DictConfigParser(ConfigParser.ConfigParser):
+class DictConfigParser(configparser.ConfigParser):
     """Provides dictionary access to ConfigParser items.
 
     Inspired by http://stackoverflow.com/a/3220891/1309774
     """
     def __init__(self):
-        ConfigParser.ConfigParser.__init__(self)
+        configparser.ConfigParser.__init__(self)
         self.optionxform = str
 
     def as_dict(self):

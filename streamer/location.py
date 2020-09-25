@@ -33,7 +33,7 @@ def lookup_location_query_macro(name):
     not found.
     """
     resolved = LOCATION_QUERY_MACROS.get(name.lower())
-    if isinstance(resolved, basestring):
+    if isinstance(resolved, str):
         return lookup_location_query_macro(resolved)
     return resolved
 

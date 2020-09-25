@@ -1,6 +1,6 @@
 import unittest
-import streamer
-import args
+from . import streamer
+from . import args
 
 class Tests(unittest.TestCase):
     def test_duration_opts(self):

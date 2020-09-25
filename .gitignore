@@ -8,3 +8,6 @@ streamer/.coverage
 streamer/.coveragerc
 streamer/htmlcov/*
 *.ipynb
+*.py.bak
+.pytest_cache/*
+
