@@ -1,2 +1,1 @@
-simplejson
 tweepy==3.9
