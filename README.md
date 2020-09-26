@@ -1,25 +1,22 @@
-# Twitter Streamer #
+# Twitter Streamer
 
-*Twitter Streamer* is a Python command-line utility to dump [Twitter streaming API][streaming-apis]
+_Twitter Streamer_ is a Python command-line utility to dump [Twitter streaming API][streaming-apis]
 [statuses/filter][statuses-filter] method data to stdout.
 
 It began life as a testing tool for [Tweepy][tweepy], and to satisfy my curiosity.
 It's currently in an early beta test state, and needs testing and improvement.
 (see [Known issues](#known-issues), below)
 
-## PROJECT STATUS ##
+## Compatibility
 
-**NOTE:** This project is not currently ported to Python 3, and is otherwise
-woefully out of date.  It is not under active development, though there are
-several improvements I plan on pushing to this repo.  Please check the issues
-list if you have any questions or concerns.
+Twitter-streamer requires python 3.6 or greater
 
-## Prerequisites ##
+## Prerequisites
 
 You will need:
 
- 1. Python 2.7, [Tweepy][tweepy] and its prerequisites.
- 2. Your [Twitter API keys][twitter-api-keys].
+1.  Python 3.6+, [Tweepy][tweepy] and its prerequisites.
+2.  Valid[Twitter Developer API keys][twitter-api-keys].
 
 Once you have your API keys, export the following environment variables:
 
@@ -29,17 +26,15 @@ Once you have your API keys, export the following environment variables:
     export ACCESS_SECRET="your-access-token-secret"
 
 These environment variables must be set correctly for twitter-streamer to
-function properly.  If any of these variables are not available, you'll see
+function properly. If any of these variables are not available, you'll see
 an error message and twitter-streamer will terminate.
 
 If you try to use invalid API keys, you'll see something like this output:
 
     StreamListener.on_error: 401
-    StreamListener.on_error: 401
-    StreamListener.on_error: 401
     ...
 
-## Basic Usage ##
+## Basic Usage
 
 Activate the appropriate virtual environment as necessary, then:
 
@@ -47,53 +42,53 @@ Activate the appropriate virtual environment as necessary, then:
 
 You can print a usage summary by invoking `streamer.py` with the `-h` or `--help` option.
 
-The positional *track* parameter provides one or more [track search terms][parameters-track] for the [Twitter
-*statuses/filter* API][statuses-filter].  Commas denote an *or* relationship, while spaces
-denote an *and* relationship.
+The positional _track_ parameter provides one or more [track search terms][parameters-track] for the [Twitter
+_statuses/filter_ API][statuses-filter]. Commas denote an _or_ relationship, while spaces
+denote an _and_ relationship.
 
-You can provide multiple *track* parameters, which will expand the search terms.
+You can provide multiple _track_ parameters, which will expand the search terms.
 
 Please refer to the [track][parameters-track] documentation for specific limitations and
-usage examples.  See [this question][twitter-track-hashtags] for help filtering on hashtags using
+usage examples. See [this question][twitter-track-hashtags] for help filtering on hashtags using
 URL encoding.
 
-## Examples ##
+## Examples
 
-Stream (filter) statuses containing both *car* **and** *dog*:
+Stream (filter) statuses containing both _car_ **and** _dog_:
 
     python streamer.py "car dog"
 
-Stream statuses containing either *boat* **or** *bike*:
+Stream statuses containing either _boat_ **or** _bike_:
 
     python streamer.py "boat,bike"
 
-Stream statuses containing (*water* **and** *drink*) *or* (*eat* **and** *lunch*):
+Stream statuses containing (_water_ **and** _drink_) _or_ (_eat_ **and** _lunch_):
 
     python streamer.py "water drink" "eat lunch"
 
-## Output Format ##
+## Output Format
 
 The default output mode dumps the unprocessed stream's JSON string for each received
 element, followed by a newline.
 
 Each raw stream element is expected to be a well-formed JSON object, but the
 stream elements are not separated by commas, nor is the stream wrapped in a JSON
-list.  Therefore, if you expect to parse the entire output of this program's JSON
+list. Therefore, if you expect to parse the entire output of this program's JSON
 data, you will need to transform it into well-formed JSON, or take each newline-separated
 element as an independent JSON object rather than treat the stream as a JSON array.
 
 The program will produce CSV output when using `--fields` (`-f`) field specifiers.
-See [*Field Output Selectors*](#field-output-selectors), below.
+See [_Field Output Selectors_](#field-output-selectors), below.
 
-## Duration Limits (`--duration` argument) ##
+## Duration Limits (`--duration` argument)
 
 You can set a run duration in seconds, minutes, hours, or days using the
-`--duration=` option.  Use a reasonable integer value followed by s, m, h, or
+`--duration=` option. Use a reasonable integer value followed by s, m, h, or
 d for seconds, minutes, hours, or days, respectively.
 
-## Experimental Features ##
+## Experimental Features
 
-### Following users ###
+### Following users
 
 As of v0.0.6-dev, you can follow user ids by using the `--follow` (`-F`) option.
 The `--follow` option accepts a list of comma-separated integer user id values.
@@ -109,11 +104,11 @@ you can use the helper script `scripts/lookup-users.py`:
 filter results to only those users, rather, it adds the selected users' streams
 to the incoming stream results.)
 
-### Location-based searching ###
+### Location-based searching
 
 As of v0.0.4, you can add location-based search criteria by specifying the `--locations`
-option.  The value is a comma-separated list of longitude, latitude pairs that
-define one or more bounding boxes to include in the stream.  (This implies that
+option. The value is a comma-separated list of longitude, latitude pairs that
+define one or more bounding boxes to include in the stream. (This implies that
 the number of comma-separated `--locations=` values must be a multiple of 4, and
 in fact Tweepy enforces this for us.)
 
@@ -122,7 +117,7 @@ Example:
     python streamer.py -f=place.full_name,coordinates.coordinates,text --locations="-122.75,36.8,-121.75,37.8"
 
 This produces a stream of status updates as CSV, with the `place.full_name`,
-`coordinates.coordinates`, and `text` fields (if available).  Here is
+`coordinates.coordinates`, and `text` fields (if available). Here is
 an example with longitude and latitude obscured in order to protect privacy:
 
     "San Jose, CA","[longitude, latitude]",@user is a boy
@@ -133,7 +128,7 @@ where `longitude` and `latitude` are floating-point numbers representing Twitter
 notion of the Tweet's location.
 
 There are several fields that are used to determine location: [`coordinates`][twitter-coordinates],
-[`place`][twitter-place], and `geo` (the latter is deprecated.)  Note that
+[`place`][twitter-place], and `geo` (the latter is deprecated.) Note that
 Twitter prioritizes the location data by preferring `coordinates` over `place` when
 determining if a tweet should be included based on geo location.
 
@@ -146,25 +141,25 @@ See the Twitter's [Tweets][twitter-tweets] structure reference for more informat
 about location-based information, and the [location][parameters-location] for more
 about the `location` parameter.
 
-#### Location Query ####
+#### Location Query
 
 Recent development versions (0.0.5-dev and higher) support a new option:
-`--location-query`.  It allows you to reference a Twitter Place name, and
+`--location-query`. It allows you to reference a Twitter Place name, and
 automatically use the resulting coordinates as the value of the `--location`
-parameter.  (Currently the resulting `--location-query` bounding box overrides
+parameter. (Currently the resulting `--location-query` bounding box overrides
 any values passed in the `--location` command line option)
 
 The `--location-query` value is passed to the Tweepy `API.geo_search` method
 (which uses the Twitter [geo/search][twitter-go-search]) as the `query` parameter.
 
 The value is case-insensitive, and the value must match an existing Twitter Place
-`full_name` field.  In general, you can use this pattern:
+`full_name` field. In general, you can use this pattern:
 
      --location-query="{city-name}, {state-abbrev}"
      --location-query="{state-name}, US"
 
 where {city-name} is a well-known city name, {state-name} is a full state name,
-and {state-abbrev} is a standard two-letter state abbreviation.  You can search
+and {state-abbrev} is a standard two-letter state abbreviation. You can search
 for other types of names, but you'll have to do you own research or experiment
 to find valid values.
 
@@ -175,34 +170,34 @@ Example:
 
 Matching is done without regard to spaces, but
 the Twitter API might fail to return expected matches if you deviate too far from the
-pattern shown above.  If in doubt, enable full debug logging, by passing
+pattern shown above. If in doubt, enable full debug logging, by passing
 `-l DEBUG` on the command line.
 
-#### Location Issues ####
+#### Location Issues
 
-* Note that there are [open issues](https://dev.twitter.com/issues/295) regarding
-the accuracy of Twitter's `locations` filtering.  You may need to do your own
-post-filtering of the results to ensure they are within the desired bounding
-box.
-* Using `--location-query="United States"` results in an error because [Twitter
-doesn't return a bounding box for the United States][lookup-usa].  It does for
-[Canada][lookup-canada].  Go figure.
+- Note that there are [open issues](https://dev.twitter.com/issues/295) regarding
+  the accuracy of Twitter's `locations` filtering. You may need to do your own
+  post-filtering of the results to ensure they are within the desired bounding
+  box.
+- Using `--location-query="United States"` results in an error because [Twitter
+  doesn't return a bounding box for the United States][lookup-usa]. It does for
+  [Canada][lookup-canada]. Go figure.
 
-### Field Output Selectors ###
+### Field Output Selectors
 
 The `-f` (or `--fields`) parameter allows a comma-separated list of output fields.
 The field values will be emitted in the order listed in the given `-f`
-parameter value.  Output will be formatted as CSV records.
+parameter value. Output will be formatted as CSV records.
 
 You can access nested elements by using dotted notation: `user.name` accesses
-the `name` element of the `user` object.  See Twitter's [tweets][twitter-tweets]
+the `name` element of the `user` object. See Twitter's [tweets][twitter-tweets]
 structure reference for a list of valid elements.
 
 If you reference a non-existent element, the output column will be empty.
 If you prefer to have an error message displayed and terminate processing
 specify the `-t` or `--terminate-on-error` option.
 
-Example 1: *list created_at and text fields for 'elections'*
+Example 1: _list created_at and text fields for 'elections'_
 
     python streamer.py -f "created_at,text" elections
 
@@ -267,31 +262,29 @@ _Example - Stream 5 tweets containing the word 'python'_
 
     Posted by @CodePerfectPlus… https://t.co/qx2S7fp2Aw"
 
-## To be done ##
+## To be done
 
 See [TODO.md](TODO.md)
 
-## Known issues ##
+## Known issues
 
-* Needs a bit of cleanup -- obsolete code remains from prior project and will
-be refactored or removed.
-* Error handling needs work.
-    The current default mode retries the connection with a delay
-in the event of most failures; this keeps Streamer running despite network
-problems or other errors.
-    If you specify the `--terminate-on-errors` (`-t`) option, Streamer will
-    terminate with an error message on errors rather than retrying certain
-    operations.  This is a work in progress.
-* Log messages go to stderr.
-* If you receive 401 errors during authentication, ensure your system's date and
-time settings are correct.  [Auth can fail if your clock is out of sync][twitter-401-error] with
-Twitter's servers.  The `scripts/twitter-time-compare.sh` script shows
-Twitter's server and the local server times for comparison.
+- Error handling needs work.
+  The current default mode retries the connection with a delay
+  in the event of most failures; this keeps Streamer running despite network
+  problems or other errors.
+  If you specify the `--terminate-on-errors` (`-t`) option, Streamer will
+  terminate with an error message on errors rather than retrying certain
+  operations. This is a work in progress.
+- Log messages go to stderr.
+- If you receive 401 errors during authentication, ensure your system's date and
+  time settings are correct. [Auth can fail if your clock is out of sync][twitter-401-error] with
+  Twitter's servers. The `scripts/twitter-time-compare.sh` script shows
+  Twitter's server and the local server times for comparison.
 
-## License ##
+## License
 
 (MIT License) - Copyright (c) 2012-2013 Exodus Development, Inc. except where
-otherwise noted.  Please refer to LICENSE.md for the gory details.
+otherwise noted. Please refer to LICENSE.md details.
 
 [streaming-apis]: https://dev.twitter.com/docs/streaming-apis
 [parameters-track]: https://dev.twitter.com/docs/streaming-apis/parameters#track
