@@ -2,6 +2,7 @@ import csv as csv_lib
 import json as json
 import sys
 import time
+from datetime import datetime
 
 import tweepy
 
@@ -45,7 +46,7 @@ class StreamListener(tweepy.StreamListener):
         )
 
     def dump_with_timestamp(self, text, category="Unknown"):
-        print("(%s)--%s--%s" % (category, datetime.datetime.now(), text))
+        print("(%s)--%s--%s" % (category, datetime.now(), text))
 
     def dump_stream_data(self, stream_data):
         self.dump_with_timestamp(stream_data)
@@ -121,7 +122,7 @@ class StreamListener(tweepy.StreamListener):
         # This bit does consume some time, so let's not do it unless absolutely
         # necessary.
         if self.opts.report_lag:
-            now = datetime.datetime.utcnow()
+            now = datetime.utcnow()
             tweepy_status = tweepy.models.Status.parse(
                 self.api, json.loads(stream_data)
             )
