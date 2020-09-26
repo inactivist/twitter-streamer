@@ -11,9 +11,9 @@ try:
     for line in sys.stdin:
         count += 1
 except KeyboardInterrupt:
-    print
+    print()
     pass
 end = time.time()
 et = end - start
 lps = count / et
-print "Elapsed time = %f, lines = %d,  lps = %f" % (et, count, lps)
+print("Elapsed time = %f, lines = %d,  lps = %f" % (et, count, lps))

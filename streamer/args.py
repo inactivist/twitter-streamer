@@ -5,12 +5,12 @@ def csv_args(value):
     """Parse a CSV string into a Python list of strings.
 
     Used in command line parsing."""
-    return map(str, value.split(","))
+    return list(map(str, value.split(",")))
 
 
 def csv_ints(value):
     """ Parse a CSV string into an array of ints. """
-    return map(int, value.split(","))
+    return list(map(int, value.split(",")))
 
 
 def userids_type(value):

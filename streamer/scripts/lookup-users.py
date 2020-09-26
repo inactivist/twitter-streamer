@@ -17,9 +17,9 @@ def lookup_user_ids(api, screen_names):
     # Replace any ids starting with '@' with the resulting user id.
     l = api.lookup_users(screen_names=screen_names)
     # Order of returned items may not match order of arguments.
-    return dict(zip([(x.screen_name, x.id_str) for x in l], [x.id_str for x in l]))
+    return dict(list(zip([(x.screen_name, x.id_str) for x in l], [x.id_str for x in l])))
 
 
 user_ids = lookup_user_ids(api, sys.argv[1:])
 for user_name, user_id in user_ids:
-    print "%s: %s" % (user_name, user_id)
+    print("%s: %s" % (user_name, user_id))

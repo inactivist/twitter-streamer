@@ -5,8 +5,9 @@
 
     TODO: Probably don't need classes.  Consider refactoring.
 """
+import json
+
 import tweepy
-import simplejson as json
 
 
 class MessageRecognizer(object):
@@ -24,6 +25,7 @@ class MessageRecognizer(object):
 
 class MatchAnyRecognizer(MessageRecognizer):
     """Match any stream_data."""
+
     def match(self, stream_data):
         return True
 
@@ -40,6 +42,7 @@ class DataStartsWithRecognizer(MessageRecognizer):
 class DataContainsRecognizer(MessageRecognizer):
     """A simple string-in-message recognizer.  Matches if a string is anywhere
     in the stream_data body."""
+
     def __init__(self, handler_method, match_string):
         self.contains_string = match_string
         super(DataContainsRecognizer, self).__init__(handler_method)

@@ -1,13 +1,14 @@
+import csv as csv_lib
+import json as json
 import sys
 import time
-import csv as csv_lib
+from datetime import datetime
+
 import tweepy
-import simplejson as json
 
-import message_recognizers
-import utils
+from . import message_recognizers, utils
 
-MISSING_FIELD_VALUE = ''
+MISSING_FIELD_VALUE = ""
 
 
 class StreamListener(tweepy.StreamListener):
@@ -28,27 +29,24 @@ class StreamListener(tweepy.StreamListener):
         self.recognizers = (
             message_recognizers.DataContainsRecognizer(
                 handler_method=self.parse_status_and_dispatch,
-                match_string='"in_reply_to_user_id_str":'),
-
+                match_string='"in_reply_to_user_id_str":',
+            ),
             message_recognizers.DataContainsRecognizer(
-                handler_method=self.parse_limit_and_dispatch,
-                match_string='"limit":{'),
-
+                handler_method=self.parse_limit_and_dispatch, match_string='"limit":{'
+            ),
             message_recognizers.DataContainsRecognizer(
                 handler_method=self.parse_warning_and_dispatch,
-                match_string='"warning":'),
-
+                match_string='"warning":',
+            ),
             message_recognizers.DataContainsRecognizer(
-                handler_method=self.on_disconnect,
-                match_string='"disconnect":'),
-
+                handler_method=self.on_disconnect, match_string='"disconnect":'
+            ),
             # Everything else is sent to logger
-            message_recognizers.MatchAnyRecognizer(
-                handler_method=self.on_unrecognized),
+            message_recognizers.MatchAnyRecognizer(handler_method=self.on_unrecognized),
         )
 
     def dump_with_timestamp(self, text, category="Unknown"):
-        print "(%s)--%s--%s" % (category, datetime.datetime.now(), text)
+        print("(%s)--%s--%s" % (category, datetime.now(), text))
 
     def dump_stream_data(self, stream_data):
         self.dump_with_timestamp(stream_data)
@@ -58,15 +56,16 @@ class StreamListener(tweepy.StreamListener):
 
     def on_disconnect(self, stream_data):
         msg = json.loads(stream_data)
-        self.logger.warn("Disconnect: code: %d stream_name: %s reason: %s",
-                         utils.resolve_with_default(msg, 'disconnect.code', 0),
-                         utils.resolve_with_default(
-                             msg, 'disconnect.stream_name', 'n/a'),
-                         utils.resolve_with_default(msg, 'disconnect.reason', 'n/a'))
+        self.logger.warn(
+            "Disconnect: code: %d stream_name: %s reason: %s",
+            utils.resolve_with_default(msg, "disconnect.code", 0),
+            utils.resolve_with_default(msg, "disconnect.stream_name", "n/a"),
+            utils.resolve_with_default(msg, "disconnect.reason", "n/a"),
+        )
 
     def parse_warning_and_dispatch(self, stream_data):
         try:
-            warning = json.loads(stream_data).get('warning')
+            warning = json.loads(stream_data).get("warning")
             return self.on_warning(warning)
         except json.JSONDecodeError:
             self.logger.exception("Exception parsing: %s" % stream_data)
@@ -92,7 +91,9 @@ class StreamListener(tweepy.StreamListener):
                         except AttributeError:
                             if self.opts.terminate_on_error:
                                 self.logger.error(
-                                    "Field '%s' not found in tweet id=%s, terminating." % (f, status.id_str))
+                                    "Field '%s' not found in tweet id=%s, terminating."
+                                    % (f, status.id_str)
+                                )
                                 # Terminate main loop.
                                 self.running = False
                                 # Terminate read loop.
@@ -105,7 +106,7 @@ class StreamListener(tweepy.StreamListener):
                         # as value is already set.
                         # See: tweepy.utils.convert_to_utf8_str() for example conversion.
                         try:
-                            value = value.encode('utf8')
+                            value = value.encode("utf8")
                         except AttributeError:
                             pass
                         csvrow.append(value)
@@ -115,30 +116,34 @@ class StreamListener(tweepy.StreamListener):
                     pass
             else:
                 # Raw JSON stream data output:
-                print stream_data.strip()
+                print(stream_data.strip())
 
         # Parse stream_data, compare tweet timestamp to current time as GMT;
         # This bit does consume some time, so let's not do it unless absolutely
         # necessary.
         if self.opts.report_lag:
-            now = datetime.datetime.utcnow()
+            now = datetime.utcnow()
             tweepy_status = tweepy.models.Status.parse(
-                self.api, json.loads(stream_data))
+                self.api, json.loads(stream_data)
+            )
             delta = now - tweepy_status.created_at
             if abs(delta.seconds) > self.opts.report_lag:
                 # TODO: Gather and report stats on time lag.
                 # TODO: Log transitions: lag less than or greater than current
                 # # seconds, rising/falling, etc.
                 self.logger.warn(
-                    "Tweet time and local time differ by %d seconds", delta.seconds)
+                    "Tweet time and local time differ by %d seconds", delta.seconds
+                )
 
     def parse_limit_and_dispatch(self, stream_data):
-        return self.on_limit(json.loads(stream_data)['limit']['track'])
+        return self.on_limit(json.loads(stream_data)["limit"]["track"])
 
     def is_retweet(self, tweet):
-        return hasattr(tweet, 'retweeted_status') \
-            or tweet.text.startswith('RT ') \
-            or ' RT ' in tweet.text
+        return (
+            hasattr(tweet, "retweeted_status")
+            or tweet.text.startswith("RT ")
+            or " RT " in tweet.text
+        )
 
     def tweet_matchp(self, tweet):
         """Return True if tweet matches selection criteria...
@@ -155,8 +160,9 @@ class StreamListener(tweepy.StreamListener):
         return True
 
     def on_warning(self, warning):
-        self.logger.warn("Warning: code=%s message=%s" %
-                         (warning['code'], warning['message']))
+        self.logger.warn(
+            "Warning: code=%s message=%s" % (warning["code"], warning["message"])
+        )
         # If code='FALLING_BEHIND' buffer state is in warning['percent_full']
 
     def on_error(self, status_code):
@@ -173,7 +179,7 @@ class StreamListener(tweepy.StreamListener):
 
         Return False to stop processing.
         """
-        self.logger.warn('on_timeout')
+        self.logger.warn("on_timeout")
         return  # Continue streaming.
 
     def on_data(self, data):
@@ -205,12 +211,15 @@ class StreamListener(tweepy.StreamListener):
                 et = int(time.time()) - self.first_message_received
                 flag = et >= self.opts.duration
                 if flag:
-                    self.logger.debug("Stop requested due to duration limits (et=%d, target=%d seconds).",
-                                      et,
-                                      self.opts.duration)
+                    self.logger.debug(
+                        "Stop requested due to duration limits (et=%d, target=%d seconds).",
+                        et,
+                        self.opts.duration,
+                    )
                 return flag
         if self.opts.max_tweets and self.status_count > self.opts.max_tweets:
             self.logger.debug(
-                "Stop requested due to count limits (%d)." % self.opts.max_tweets)
+                "Stop requested due to count limits (%d)." % self.opts.max_tweets
+            )
             return True
         return False
