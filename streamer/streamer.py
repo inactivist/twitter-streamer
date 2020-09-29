@@ -10,7 +10,6 @@ import tweepy
 from . import args, location, utils
 from .listener import StreamListener
 
-logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 RETRY_LIMIT = 10
@@ -88,12 +87,11 @@ def process_tweets(opts):
                     streamer.filter(**kwargs)
                 else:
                     raise
-
             logger.debug("Returned from streaming...")
-        except IOError:
-            if opts.terminate_on_error:
-                listener.running = False
-            logger.exception("Caught IOError")
+        except BrokenPipeError:
+            logger.error("Broken pipe")
+            listener.running = False
+            break
         except KeyboardInterrupt:
             logger.warning("KeyboardInterrupt")
             # Stop the listener loop.
@@ -109,7 +107,11 @@ def process_tweets(opts):
 
 def main():
     opts = args.parse_command_line(get_version())
-
+    FORMAT = (
+        "twitter-streamer :: [%(filename)s:%(lineno)s - %(funcName)s()]  %(message)s"
+    )
+    logging.basicConfig(format=FORMAT, level=opts.log_level)
+    logger.setLevel = opts.log_level
     # TODO: Fix this -
     if not (opts.location_query or opts.locations or opts.follow):
         if not opts.track:
@@ -118,7 +120,6 @@ def main():
                 % __file__
             )
             sys.exit()
-    utils.init_logger(logger, opts.log_level)
     logger.debug("opts=%s", opts.__dict__)
     process_tweets(opts)
 

@@ -3,6 +3,7 @@ Some of this code was extracted from other sources.  Copyright information
 may be found at the links provided.
 """
 
+
 def resolve(obj, attrspec):
     """
     Resolve elements from an object.
@@ -54,9 +55,3 @@ def multi_getattr(obj, attr, default=None):
             else:
                 raise
     return obj
-
-def init_logger(logger, level):
-    import logging
-    FORMAT = "%(asctime)-15s %(message)s"
-    logging.basicConfig(format=FORMAT, level=level)
-    logger.setLevel(level)
