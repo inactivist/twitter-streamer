@@ -26,7 +26,7 @@ def resolve_with_default(obj, attrspec, default=None):
     result = default
     try:
         result = resolve(obj, attrspec)
-    except:
+    except Exception:
         # Pass along the exception if no default is specified; otherwise, eat it.
         if default is None:
             raise
